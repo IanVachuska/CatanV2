@@ -19,6 +19,7 @@ public abstract class Tile extends JButton {
     private final Dimension loc;
     private int biome;
     private int id;
+    private int type;//shuffled/fixed/unflipped
 
     //CONSTRUCTORS
     public Tile() {
@@ -32,10 +33,17 @@ public abstract class Tile extends JButton {
     public void setLoc(int row, int col){
         this.loc.setSize(col,row);
     }
+    public void setId(int id){
+        this.id = id;
+    }
+    public void setType(int type){this.type = type;}
 
     //GETTERS
     public int getBiome() {
         return biome;
+    }
+    public char getBiomeChar(){
+        return biomeChars[biome];
     }
     public int getRow(){
         return loc.height;
@@ -43,9 +51,11 @@ public abstract class Tile extends JButton {
     public int getColumn(){
         return loc.width;
     }
-    public char getBiomeChar(){
-        return biomeChars[biome];
+    public int getId(){ return id; }
+    public int getType(){
+        return type;
     }
+
 
     //STRING METHODS
     public String toString(){

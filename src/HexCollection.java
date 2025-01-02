@@ -24,16 +24,18 @@ public class HexCollection {
         columns = board.getHexGridDim().width;
         spiralSize = 0;
         gridSize = 0;
-        //collectionSize = board.getShuffledHexCount() + board.getFixedHexCount() + board.getUnflippedHexCount();
         grid = new Hex[board.getHexGridDim().height][columns];
-        spiral = new Hex[board.getShuffledHexCount()];
+        int totalHexCount = board.getShuffledHexCount()
+                + board.getFixedHexCount()
+                + board.getUnflippedHexCount();
+        spiral = new Hex[totalHexCount];
     }
     //ADD
     public void add(Hex hex){
         grid[hex.getRow()][hex.getColumn()] = hex;
         gridSize++;
     }
-    public void add(Hex hex, int spiralIndex){
+    public void addToSpiral(Hex hex, int spiralIndex){
         spiral[spiralIndex] = hex;
         spiralSize++;
     }
@@ -128,11 +130,11 @@ public class HexCollection {
         return null;
     }
 
-    public IIterator getGridIterator(){
+    public IIterator<Hex> getGridIterator(){
         return new HexGridIterator();
     }
-    public IIterator getSpiralIterator(){
-        return new HexGridIterator();
+    public IIterator<Hex> getSpiralIterator(){
+        return new HexSpiralIterator();
     }
 
     /* Helper functions for the above Top/Bottom getters
@@ -145,7 +147,7 @@ public class HexCollection {
     }
 
     //ITERATORS---------------------------------------------//
-    private class HexGridIterator implements IIterator{
+    private class HexGridIterator implements IIterator<Hex>{
         private int index;
         private int nullOffset;
 
@@ -168,7 +170,7 @@ public class HexCollection {
             return hex;
         }
     }
-    private class HexSpiralIterator implements IIterator{
+    private class HexSpiralIterator implements IIterator<Hex>{
         private int index;
 
         public HexSpiralIterator(){

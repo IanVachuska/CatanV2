@@ -7,7 +7,7 @@ public class Hex extends Tile {
 
     public static final int SHUFFLED = 0;
     public static final int FIXED = 1;
-    public static final int UNFLIPPED = 2;
+    //public static final int UNFLIPPED = 8; Defined in tile
 
     //FIELDS
     //local coordinates
@@ -15,12 +15,13 @@ public class Hex extends Tile {
     private final float[] yPoints;
 
     private int token;
-    private int type;//shuffled/fixed/unflipped
 
     //CONSTRUCTORS
     public Hex() {
         super();
         setBiome(UNFLIPPED);
+        setToken(0);
+        setType(SHUFFLED);
         xPoints = new float[SIDES];
         yPoints = new float[SIDES];
         setPoints();
@@ -49,8 +50,9 @@ public class Hex extends Tile {
     //STRING METHODS
     public String toString(){
         return super.toString() +
-                "Token: " + getToken();
+                ", Token: " + getToken();
     }
+
     @Override
     protected void paintComponent(Graphics g) {
         float x = xPoints[0];

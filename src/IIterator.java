@@ -1,4 +1,4 @@
-public interface IIterator {
+public interface IIterator<Object> {
     boolean hasNext();
-    Hex getNext();
+    Object getNext();
 }

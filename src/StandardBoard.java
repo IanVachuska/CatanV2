@@ -1,9 +1,8 @@
-import java.util.Random;
 
 public class StandardBoard extends Board {
     //CONSTRUCTORS
-    public StandardBoard(int boardSize) {
-        super(boardSize);
+    public StandardBoard(int boardSize, int flags) {
+        super(boardSize, flags);
     }
     //INITIALIZERS
     /* Initializes the rows and columns of the hexGrid */
@@ -30,96 +29,99 @@ public class StandardBoard extends Board {
     }
     /* Sets the amount of each Biome for the Hex tiles */
     public void initResourceCounts(){
-        super.setResourceCounts(BoardBuilder.getStandardResources(getBoardSize()));
+        super.setResourceCounts(StandardBoardBuilder.getResources(getBoardSize()));
     }
     /* Sets the amount of each Biome for the Port tiles */
     public void initPortCounts(){
-        super.setPortCounts(BoardBuilder.getStandardPorts(getBoardSize()));
+        super.setPortCounts(StandardBoardBuilder.getPorts(getBoardSize()));
     }
     /* Sets the token array with each number in order */
     public void initTokens(){
-        super.setTokens(BoardBuilder.getStandardTokens(getBoardSize()));
-    }
-    /* Wrapper to randomize start position and orientation */
-    public void initHexSpiral() {
-        Random rand = new Random();
-        int[] orientation = {-1,1};
-        initHexSpiral(rand.nextInt(Hex.SIDES),
-                orientation[rand.nextInt(2)]);
-    }
-    /* Initializes the hex spiral in HexCollection based of the starting hex and orientation */
-    public void initHexSpiral(int startPosition, int orientation){
-        int index = 0;//Perhaps use a proxy?
-        IIterator i = getHexCollection().getGridIterator();
-        Hex hex;
-        boolean[][] valid = new boolean[getHexGridDim().height][getHexGridDim().width];
-
-        //init valid matrix
-        while(i.hasNext()){
-            hex = i.getNext();
-            if(hex != null) {
-                valid[hex.getRow()][hex.getColumn()] = true;
-            }
-        }
-        HexCollection hc = getHexCollection();
-        hex = getStartingHex(startPosition%Hex.SIDES);
-        int direction = Math.floorMod(startPosition+(2*orientation),Hex.SIDES);
-        Hex prev = hex;
-        while(index < getShuffledHexCount()){
-            while (hex != null && valid[hex.getRow()][hex.getColumn()]){
-                hc.add(hex, index);
-                valid[hex.getRow()][hex.getColumn()] = false;
-                prev = hex;
-                hex = hc.get(hex, direction);
-                index++;
-            }
-            hex = prev;
-            direction = Math.floorMod(direction+orientation, Hex.SIDES);
-            hex = hc.get(hex, direction);
-        }
-    }
-
-    /* Helper for initHexSpiral(int, int) */
-    private Hex getStartingHex(int startPosition){
-        HexCollection hc = getHexCollection();
-        int rows = getHexGridDim().height;
-        int cols = getHexGridDim().width;
-        //int offset = (cols/2)%2;//0 for small board, 1 for large
-        int offset = getColumnOffset();//verify this works
-        return switch (startPosition) {
-            case HexCollection.TOP_LEFT -> hc.get(0, 1);
-            case HexCollection.TOP_RIGHT -> hc.get(0, 3);
-            case HexCollection.RIGHT -> hc.get(rows/2, cols - 1);
-            case HexCollection.BOTTOM_RIGHT -> hc.get(rows-1, 3);
-            case HexCollection.BOTTOM_LEFT -> hc.get(rows-1, 1);
-            case HexCollection.LEFT -> hc.get(rows/2, 0);
-            default -> null;
-        };
-    }
-
-    /* Test initHexSpiral at every start/orientation */
-    public void testHexSpiral() {
-        System.out.println("--------------------");
-        for (int strp = 0; strp < Hex.SIDES; strp++) {
-            initHexSpiral(strp, CLOCKWISE);
-            System.out.println(getHexGridString(new BiomeCommand()));
-            System.out.println("--------------------");
-        }
-        System.out.println("--------------------");
-        System.out.println("--------------------");
-        for (int strp = 0; strp < Hex.SIDES; strp++) {
-            initHexSpiral(strp, COUNTER_CLOCKWISE);
-            System.out.println(getHexGridString(new BiomeCommand()));
-            System.out.println("--------------------");
-        }
+        super.setTokens(StandardBoardBuilder.getTokens(getBoardSize()));
     }
 
 
     //EMPTY BODY METHODS
     @Override
+    public void placeFixedTilesSmall() {}
+    @Override
+    public void placeFixedTilesLarge() {}
+    @Override
+    public void placeUnflippedTilesSmall() {}
+    @Override
+    public void placeUnflippedTilesLarge() {}
+
+    @Override
     public void setHexGridDim(int rows, int cols) {}
     @Override
     public void setTileCounts(int randomHexCount, int fixedHexCount, int unflippedHexCount, int portCount) {}
-    @Override
-    public void placeFixedTiles() {}
+
+    //--------------------------------------------------------------------------------------
+
+    public static class StandardBoardBuilder {
+        //RESOURCES
+        private static final int[] resourcesSmall =
+                {4,4,4,3,3, 0,1,0};
+        private static final int[] resourcesLarge =
+                {6,6,6,5,5, 0,2,0};
+        public static int[] getResources(int boardSize) {
+            if (boardSize == SMALL_BOARD) {
+                return resourcesSmall;
+            } else {
+                return resourcesLarge;
+            }
+        }
+
+        //TOKENS
+        private static final int[] tokensSmall =
+                {5,2,6,3,8,10,9,12,11,4,8,10,9,4,5,6,3,11};
+        private static final int[] tokensLarge =
+                {2,5,4,6,3,9,8,11,11,10,6,3,8,4,8,10,11,12,10,5,4,9,5,9,12,3,2,6};
+        public static int[] getTokens(int boardSize) {
+            if (boardSize == SMALL_BOARD) {
+                return tokensSmall;
+            } else {
+                return tokensLarge;
+            }
+        }
+
+        //PORTS
+        private static final int[] portsSmall =
+                {1,1,1,1,1,4};
+        private static final int[] portsLarge =
+                {1,2,1,1,1,5};
+        public static int[] getPorts(int boardSize) {
+            if (boardSize == SMALL_BOARD) {
+                return portsSmall;
+            } else {
+                return portsLarge;
+            }
+        }
+
+        //UNFLIPPED RESOURCES
+        private static final int[] unflippedResourcesSmall =
+                {0,0,0,0,0, 0,0,0};
+        private static final int[] unflippedResourcesLarge =
+                {0,0,0,0,0, 0,0,0};
+        public static int[] getUnflippedResources(int boardSize) {
+            if(boardSize == SMALL_BOARD){
+                return unflippedResourcesSmall;
+            } else {
+                return unflippedResourcesLarge;
+            }
+        }
+        //UNFLIPPED TOKENS
+        private static final int[] unflippedTokensSmall =
+                {0,0,0,0,0, 0,0,0,0,0};
+        private static final int[] unflippedTokensLarge =
+                {0,0,0,0,0, 0,0,0,0,0};
+        //       2,3,4,5,6,8,9,10,11,12
+        public static int[] getUnflippedTokens(int boardSize) {
+            if(boardSize == SMALL_BOARD){
+                return unflippedTokensSmall;
+            } else {
+                return unflippedTokensLarge;
+            }
+        }
+    }
 }
