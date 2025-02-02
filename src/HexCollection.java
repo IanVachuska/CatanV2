@@ -32,12 +32,12 @@ public class HexCollection {
     }
     //ADD
     public void add(Hex hex){
-        grid[hex.getRow()][hex.getColumn()] = hex;
+        grid[hex.getGridRow()][hex.getGridColumn()] = hex;
         gridSize++;
     }
     public void addToSpiral(Hex hex, int spiralIndex){
         spiral[spiralIndex] = hex;
-        spiralSize++;
+        spiralSize = Math.max(spiralSize, spiralIndex);
     }
 
     //UNIVERSAL GETTERS
@@ -47,44 +47,60 @@ public class HexCollection {
     public Hex get(int row, int col){
         return grid[row][col];
     }
+    public Hex get(Tile tile){
+        return grid[tile.getGridRow()][tile.getGridColumn()];
+    }
     //PROXIMITY ACCESSORS
     public Hex get(Hex hex, int direction){
-        return switch (Math.floorMod(direction, Hex.SIDES)) {
-            case TOP_LEFT ->
-                    getTopLeft(hex);
-            case TOP_RIGHT ->
-                    getTopRight(hex);
-            case RIGHT ->
-                    getRight(hex);
-            case BOTTOM_RIGHT ->
-                    getBottomRight(hex);
-            case BOTTOM_LEFT ->
-                    getBottomLeft(hex);
-            case LEFT ->
-                    getLeft(hex);
-            default -> null;
-        };
+        Hex hexr = null;
+        switch (Math.floorMod(direction, Hex.SIDES)) {
+            case TOP_LEFT:
+                //System.out.println("TOP_LEFT");
+                hexr = getTopLeft(hex);
+                break;
+            case TOP_RIGHT:
+                //System.out.println("TOP_RIGHT");
+                hexr = getTopRight(hex);
+                break;
+            case RIGHT:
+                //System.out.println("RIGHT");
+                hexr = getRight(hex);
+                break;
+            case BOTTOM_RIGHT:
+                //System.out.println("BOTTOM_RIGHT");
+                hexr = getBottomRight(hex);
+                break;
+            case BOTTOM_LEFT:
+                // System.out.println("BOTTOM_LEFT");
+                hexr = getBottomLeft(hex);
+                break;
+            case LEFT:
+                //System.out.println("LEFT");
+                hexr = getLeft(hex);
+                break;
+        }
+        return hexr;
     }
     public Hex getLeft(Hex hex){
-        int row = hex.getRow();
-        int col = hex.getColumn() - 1;
+        int row = hex.getGridRow();
+        int col = hex.getGridColumn() - 1;
         if(col >= 0){
             return grid[row][col];
         }
         return null;
     }
     public Hex getRight(Hex hex){
-        int row = hex.getRow();
-        int col = hex.getColumn() + 1;
-        if(col <= grid[0].length-2){
+        int row = hex.getGridRow();
+        int col = hex.getGridColumn() + 1;
+        if(col <= grid[0].length-1){
             return grid[row][col];
         }
         return null;
     }
     public Hex getTopLeft(Hex hex){
-        int offset = applyLeftOffset(hex.getRow());
-        int row = hex.getRow() - 1;
-        int col = hex.getColumn() - offset;
+        int offset = applyLeftOffset(hex.getGridRow());
+        int row = hex.getGridRow() - 1;
+        int col = hex.getGridColumn() - offset;
 
         //System.out.println(offset);
         //System.out.println("(" + (row) + "," + (col) + ")");
@@ -94,21 +110,21 @@ public class HexCollection {
         return null;
     }
     public Hex getTopRight(Hex hex){
-        int offset = applyRightOffset(hex.getRow());
-        int row = hex.getRow() - 1;
-        int col = hex.getColumn() - offset;
+        int offset = applyRightOffset(hex.getGridRow());
+        int row = hex.getGridRow() - 1;
+        int col = hex.getGridColumn() - offset;
 
         //System.out.println(offset);
-        //System.out.println("(" + (row) + "," + (col) + ")");
+        //System.out.println("(" + (row) + "," + (col) + "), " + (grid[0].length-1));
         if(row >= 0 && col <= grid[0].length-1){
             return grid[row][col];
         }
         return null;
     }
     public Hex getBottomLeft(Hex hex){
-        int offset = applyLeftOffset(hex.getRow());
-        int row = hex.getRow() + 1;
-        int col = hex.getColumn() - offset;
+        int offset = applyLeftOffset(hex.getGridRow());
+        int row = hex.getGridRow() + 1;
+        int col = hex.getGridColumn() - offset;
 
         //System.out.println(offset);
         //System.out.println("(" + (row) + "," + (col) + ")");
@@ -118,9 +134,9 @@ public class HexCollection {
         return null;
     }
     public Hex getBottomRight(Hex hex){
-        int offset = applyRightOffset(hex.getRow());
-        int row = hex.getRow() + 1;
-        int col = hex.getColumn() - offset;
+        int offset = applyRightOffset(hex.getGridRow());
+        int row = hex.getGridRow() + 1;
+        int col = hex.getGridColumn() - offset;
 
         //System.out.println(offset);
         //System.out.println("(" + (row) + "," + (col) + ")");
@@ -169,6 +185,14 @@ public class HexCollection {
             index++;
             return hex;
         }
+
+        @Override
+        public void reset() {
+            index = 0;
+            nullOffset = 0;
+        }
+        @Override
+        public void setHead() {}
     }
     private class HexSpiralIterator implements IIterator<Hex>{
         private int index;
@@ -184,5 +208,11 @@ public class HexCollection {
         public Hex getNext() {
             return spiral[index++];
         }
+        @Override
+        public void reset() {
+            index = 0;
+        }
+        @Override
+        public void setHead() {}
     }
 }

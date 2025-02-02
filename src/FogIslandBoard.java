@@ -1,21 +1,22 @@
-public class FogIslandBoard extends Board {
+public class FogIslandBoard extends Board implements IFlippable {
     public FogIslandBoard(int boardSize, int flags) {
         super(boardSize, flags);
     }
     @Override
-    public void handleFlags(){
-        super.handleFlags();
-        if(getRandomFlag()){
-            addToResourceCount(
+    public void poolHexCounts(){
+        super.poolHexCounts();
+        combineResourceCount(
                     FogIslandBoardBuilder.getUnflippedResources(getBoardSize()));
-            TokenCollection tc = new TokenCollection(
+        TokenCollection tc = new TokenCollection(
                     FogIslandBoardBuilder.getUnflippedTokens(getBoardSize()));
-            tc.shuffle();
-            addToTokenCollection(tc);
-        }
+        tc.shuffle();
+        combineTokenCollections(tc);
+
     }
     @Override
     public void initHexGridDim() {
+        super.setHexGridDim(7,11);
+        /*
         switch (getBoardSize()){
             case Board.SMALL_BOARD:
                 super.setHexGridDim(5,5);
@@ -24,17 +25,27 @@ public class FogIslandBoard extends Board {
                 super.setHexGridDim(7,11);
                 break;
         }
+
+        */
     }
     @Override
     public void initTileCounts() {
+
+        super.setTileCounts( 21,19,25,9);
+        /*
         switch (getBoardSize()){
             case Board.SMALL_BOARD:
-                super.setTileCounts(19,0,0,9);
-                break;
+                //super.setTileCounts(19,0,0,9);
+                //break;
             case Board.LARGE_BOARD:
                 super.setTileCounts( 21,19,25,9);
                 break;
         }
+
+        */
+
+
+
     }
     @Override
     public void initResourceCounts() {
@@ -50,7 +61,7 @@ public class FogIslandBoard extends Board {
     }
     @Override
     public void placeFixedTilesSmall(){
-
+        placeFixedTilesLarge();
     }
     @Override
     public void placeFixedTilesLarge(){
@@ -80,7 +91,9 @@ public class FogIslandBoard extends Board {
         placeFixedHex(6,8, id++, Tile.GOLD);
     }
     @Override
-    public void placeUnflippedTilesSmall() {}
+    public void placeUnflippedTilesSmall() {
+        placeUnflippedTilesLarge();
+    }
     @Override
     public void placeUnflippedTilesLarge() {
         int s = getShuffledHexCount() + getFixedHexCount();
@@ -108,11 +121,17 @@ public class FogIslandBoard extends Board {
         for(int j=2;j<8;j++){
             placeUnflippedHex(r,j,s+(i++));
         }
+        System.out.println(s+i);
+        shuffleUnflippedHexes();
+    }
+    public void shuffleUnflippedHexes(){
         TokenCollection tokenCollection = new TokenCollection(
                 FogIslandBoardBuilder.getUnflippedTokens(getBoardSize()));
         tokenCollection.shuffle();
+        int s = getShuffledHexCount() + getFixedHexCount();
+        int u = getUnflippedHexCount();
         shuffleHexes(FogIslandBoardBuilder.getUnflippedResources(getBoardSize()),
-                tokenCollection, s, s+i);
+                tokenCollection, s, s+u);
     }
     @Override
     public Hex getStartingHex(int startPosition) {
@@ -126,6 +145,8 @@ public class FogIslandBoard extends Board {
         };
     }
     private Hex getStartingHexSmall(int startPosition) {
+        return getStartingHexLarge(startPosition);
+        /*
         HexCollection hc = getHexCollection();
         int rows = getHexGridDim().height;
         int cols = getHexGridDim().width;
@@ -138,6 +159,7 @@ public class FogIslandBoard extends Board {
             case HexCollection.LEFT -> hc.get(3, 0);
             default -> null;
         };
+        */
     }
     private Hex getStartingHexLarge(int startPosition) {
         HexCollection hc = getHexCollection();
@@ -163,9 +185,9 @@ public class FogIslandBoard extends Board {
                 {4,4,5,5,5,2,0,15};
         public static int[] getResources(int boardSize) {
             if(boardSize == SMALL_BOARD){
-                return resourcesSmall;
+                return resourcesLarge.clone();
             } else {
-                return resourcesLarge;
+                return resourcesLarge.clone();
             }
         }
         //TOKENS
@@ -175,9 +197,9 @@ public class FogIslandBoard extends Board {
                 {3,11,4,10,5,6,8,11,6,4,3,10,12,3,9,8,2,4,6,10,9,12,5,11,8};
         public static int[] getTokens(int boardSize) {
             if(boardSize == SMALL_BOARD){
-                return tokensSmall;
+                return tokensLarge.clone();
             } else {
-                return tokensLarge;
+                return tokensLarge.clone();
             }
         }
         //PORTS
@@ -187,9 +209,9 @@ public class FogIslandBoard extends Board {
                 {1,1,1,1,1,4};
         public static int[] getPorts(int boardSize) {
             if(boardSize == SMALL_BOARD){
-                return portsSmall;
+                return portsLarge.clone();//portsSmall;
             } else {
-                return portsLarge;
+                return portsLarge.clone();
             }
         }
 
@@ -200,9 +222,9 @@ public class FogIslandBoard extends Board {
                 {3,3,2,2,2, 1,0,12};
         public static int[] getUnflippedResources(int boardSize) {
             if(boardSize == SMALL_BOARD){
-                return unflippedResourcesSmall;
+                return unflippedResourcesLarge.clone();//unflippedResourcesSmall;
             } else {
-                return unflippedResourcesLarge;
+                return unflippedResourcesLarge.clone();
             }
         }
         //UNFLIPPED TOKENS
@@ -213,9 +235,9 @@ public class FogIslandBoard extends Board {
         //       2,3,4,5,6,8,9,10,11,12
         public static int[] getUnflippedTokens(int boardSize) {
             if(boardSize == SMALL_BOARD){
-                return unflippedTokensSmall;
+                return unflippedTokensLarge.clone();//unflippedTokensSmall;
             } else {
-                return unflippedTokensLarge;
+                return unflippedTokensLarge.clone();
             }
         }
 

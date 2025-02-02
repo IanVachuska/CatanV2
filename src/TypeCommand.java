@@ -4,7 +4,7 @@ public class TypeCommand implements ICommand
     public int get(Tile hex)
     {
         if(hex instanceof Hex){
-            return ((Hex)hex).getType();
+            return ((Hex)hex).getTypeChar();
         }
         return 0;
     }

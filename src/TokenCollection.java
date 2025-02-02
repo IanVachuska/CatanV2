@@ -6,7 +6,7 @@ import java.util.Random;
 public class TokenCollection {
     //FIELDS
     private ArrayList<Integer> tokens;
-    private IIterator iterator;
+    private final IIterator iterator;
     //CONSTRUCTOR
     public TokenCollection(int[] tokens) {
         this.tokens = new ArrayList<Integer>();
@@ -23,6 +23,12 @@ public class TokenCollection {
     }
     public Integer getNext(){
         return (Integer)iterator.getNext();
+    }
+    public void setHead(){
+        iterator.setHead();
+    }
+    public void reset(){
+        iterator.reset();
     }
     public void shuffle(){
         int tokenCount = 0;
@@ -73,12 +79,16 @@ public class TokenCollection {
     }
     private class TokenIterator implements IIterator<Integer>{
         private int current;
+        private int head;
         public TokenIterator(){
             current = 0;
+            head = 0;
         }
+        @Override
         public boolean hasNext() {
             return current < tokens.size();
         }
+        @Override
         public Integer getNext() {
             int token = -1;
             if(hasNext()){
@@ -86,6 +96,13 @@ public class TokenCollection {
                 current++;
             }
             return token;
+        }
+        public void setHead() {
+            head = current;
+        }
+        @Override
+        public void reset() {
+            current = head;
         }
     }
 }

@@ -66,9 +66,9 @@ public class StandardBoard extends Board {
                 {6,6,6,5,5, 0,2,0};
         public static int[] getResources(int boardSize) {
             if (boardSize == SMALL_BOARD) {
-                return resourcesSmall;
+                return resourcesSmall.clone();
             } else {
-                return resourcesLarge;
+                return resourcesLarge.clone();
             }
         }
 
@@ -79,9 +79,9 @@ public class StandardBoard extends Board {
                 {2,5,4,6,3,9,8,11,11,10,6,3,8,4,8,10,11,12,10,5,4,9,5,9,12,3,2,6};
         public static int[] getTokens(int boardSize) {
             if (boardSize == SMALL_BOARD) {
-                return tokensSmall;
+                return tokensSmall.clone();
             } else {
-                return tokensLarge;
+                return tokensLarge.clone();
             }
         }
 
@@ -92,9 +92,9 @@ public class StandardBoard extends Board {
                 {1,2,1,1,1,5};
         public static int[] getPorts(int boardSize) {
             if (boardSize == SMALL_BOARD) {
-                return portsSmall;
+                return portsSmall.clone();
             } else {
-                return portsLarge;
+                return portsLarge.clone();
             }
         }
 
@@ -105,9 +105,9 @@ public class StandardBoard extends Board {
                 {0,0,0,0,0, 0,0,0};
         public static int[] getUnflippedResources(int boardSize) {
             if(boardSize == SMALL_BOARD){
-                return unflippedResourcesSmall;
+                return unflippedResourcesSmall.clone();
             } else {
-                return unflippedResourcesLarge;
+                return unflippedResourcesLarge.clone();
             }
         }
         //UNFLIPPED TOKENS
@@ -118,9 +118,9 @@ public class StandardBoard extends Board {
         //       2,3,4,5,6,8,9,10,11,12
         public static int[] getUnflippedTokens(int boardSize) {
             if(boardSize == SMALL_BOARD){
-                return unflippedTokensSmall;
+                return unflippedTokensSmall.clone();
             } else {
-                return unflippedTokensLarge;
+                return unflippedTokensLarge.clone();
             }
         }
     }
