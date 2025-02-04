@@ -25,7 +25,7 @@ public abstract class Board {
     private TokenCollection tc;
 
     private HexCollection hc;//interface to access both grid and spiral representations
-    private PortCollection pc;
+    private PortCollection pc;//interface to access all and valid ports
 
     private int startPosition = 0;
     private int orientation = 1;
@@ -46,6 +46,7 @@ public abstract class Board {
     }
 
     //INITIALIZERS
+
     /**
      * <p>Initializes the hex grid and spiral, places fixed/unflipped tiles, shuffles hexes and ports.</p>
      */
@@ -72,13 +73,14 @@ public abstract class Board {
      *  <p>Note: Number of rows in grid must be set to an odd number
      *  or this method will fail.</p>
      */
-
-
     private void initHexGrid() {
+        if(hexGridDim.height%2 == 0) {
+            System.err.println("Invalid board height value: " + hexGridDim.height);
+            System.exit(1);
+        }
         hc = new HexCollection(this);
         int medianRow = hexGridDim.height/2;
         boolean debug = getDebugFlag();
-        //TODO: Error Handle boards with even number of rows.
         //Initialize the middle row of hexes first
         for (int c = 0; c < hexGridDim.width; c++) {
             hc.add(new Hex(medianRow, c, debug));
@@ -104,14 +106,14 @@ public abstract class Board {
             }
         }
     }
+
+
     /**
      * <p>Wrapper function for initHexSpiral(int startPosition, int orientation).</p>
      * @param randomStart <p>True -> Initializes hexSpiral(int, int) randomly.</p>
      *                    <p>False -> Initializes hexSpiral(int, int) with
      *                    default value (0,1) or previous value.</p>
      */
-
-
     public void initHexSpiral(boolean randomStart) {
         if(randomStart) {
             Random rand = new Random();
@@ -123,6 +125,8 @@ public abstract class Board {
             initHexSpiral(startPosition, orientation);
         }
     }
+
+
     /**
      * <p>Initializes the hex spiral in HexCollection based of the starting hex and orientation.</p>
      * @param startPosition <p>0->Top Left</p>
@@ -134,8 +138,6 @@ public abstract class Board {
      * @param orientation <p>1->ClockWise</p>
      *                    <p>-1->CounterClockWise</p>
      */
-
-
     public void initHexSpiral(int startPosition, int orientation){
         this.startPosition = startPosition;
         this.orientation = orientation;
@@ -179,6 +181,8 @@ public abstract class Board {
             hex = hc.get(hex, direction);
         }
     }
+
+
     /**
      * <p>Helper function for initHexSpiral(int, int)</p>
      * @param startPosition <p>0->Top Left</p>
@@ -189,8 +193,6 @@ public abstract class Board {
      *                      <p>5->Left</p>
      * @return The starting hex, one of 6 hexagonal corners
      */
-
-
     public Hex getStartingHex(int startPosition){
         int rows = getHexGridDim().height;
         int cols = getHexGridDim().width;
@@ -256,7 +258,7 @@ public abstract class Board {
      */
     public void shuffleHexes(){
         shuffleHexes(new BiomeCommand(), resourceCounts, tc,
-                0,getShuffledHexCount(),0);
+                0,getShuffledHexCount());
     }
 
 
@@ -269,10 +271,10 @@ public abstract class Board {
     public void shuffleHexes(ICommand command){
         if(command instanceof BiomeCommand){
             shuffleHexes(new BiomeCommand(), resourceCounts, tc,
-                    0,getShuffledHexCount(),0);
+                    0,getShuffledHexCount());
         }else{
             shuffleHexes(null, resourceCounts, tc,
-                    0,getShuffledHexCount(),0);
+                    0,getShuffledHexCount());
         }
     }
 
@@ -288,7 +290,7 @@ public abstract class Board {
      * @param end The index (spiral) for biome shuffling to end at.
      */
     public void shuffleHexes(int[] resourcePool, TokenCollection tc, int start, int end){
-        shuffleHexes(new BiomeCommand(), resourcePool, tc,start,end, resourcePool[Tile.OCEAN]/4);
+        shuffleHexes(new BiomeCommand(), resourcePool, tc,start,end);
     }
 
 
@@ -299,17 +301,16 @@ public abstract class Board {
      * @param tc An ordered collection of tokens to be placed on resource producing biomes.
      * @param start The index (spiral) for biome shuffling to begin at.
      * @param end The index (spiral) for biome shuffling to end at.
-     * @param oceanOffset Value used to add a bias towards randomly picking an ocean biome.
      */
     public void shuffleHexes(ICommand biomeCommand
-            , int[] resourcePool, TokenCollection tc, int start, int end, int oceanOffset) {
+            , int[] resourcePool, TokenCollection tc, int start, int end) {
         int startOffset = 0, endOffset = 0;
         Random rand = new Random();
         int randomCycle = 0;//incremented every loop iteration
         int index = start;
         int[] resourceCounts = resourcePool.clone();
         while(index < end) {
-            oceanOffset = resourcePool[Tile.OCEAN]/4;
+            int oceanOffset = resourcePool[Tile.OCEAN]/4;
 
             //if the last resource in the resourceCounts array is 0, then trim tail
             if(resourceCounts[(resourceCounts.length - 1) - endOffset] == 0){

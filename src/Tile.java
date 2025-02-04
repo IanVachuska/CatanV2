@@ -2,7 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 
-public abstract class Tile extends JButton {
+public abstract class Tile extends JButton implements IDrawable{
     //STATIC FIELDS
     private static final Color[] biomeColors = {
             new Color(0, 128, 0),//wood
@@ -65,7 +65,7 @@ public abstract class Tile extends JButton {
     private final AffineTransform scale;
 
     private BasicStroke stroke;
-    private Font font;
+    private final Font debugFont;
 
 
     //CONSTRUCTORS
@@ -73,9 +73,12 @@ public abstract class Tile extends JButton {
         this.gridLocation = new Point();
         this.worldLocation = new Point();
         this.scale = new AffineTransform();
-        setStrokeSelected(false);
+
         this.biome = UNFLIPPED_RESOURCE;
         this.id = 0;
+
+        setStrokeSelected(false);
+        debugFont = new Font("Arial", Font.BOLD, 10);
     }
 
     //SETTERS
@@ -188,14 +191,6 @@ public abstract class Tile extends JButton {
         }
     }
 
-
-    /**
-     * <p>Sets the tile's font.</p>
-     * @param font the new font object
-     */
-    public void setTileFont(Font font){
-        this.font = font;
-    }
 
     //GETTERS
 
@@ -329,8 +324,8 @@ public abstract class Tile extends JButton {
     /**
      * @return the currently selected font value
      */
-    public Font getTileFont(){
-        return font;
+    public Font getDebugFont(){
+        return debugFont;
     }
 
 
@@ -354,9 +349,31 @@ public abstract class Tile extends JButton {
                 "Biome: " + getBiome();
     }
 
-    //ABSTRACT
+    //ABSTRACT METHODS
+    /**
+     * <p>Set up the points necessary to draw the {@code Tile}</p>
+     */
+    abstract protected void initPoints();
+    /**
+     * <p>Paints the Tile. Do not call this function directly.</p>
+     * @param g the {@code Graphics} object
+     */
     @Override
     abstract protected void paintComponent(Graphics g);
+
+    /**
+     * <p>Displays extra information on the tile to debug errors and aid in development.</p>
+     * @param g2d the {@code Graphics2D} object
+     */
+    abstract protected void displayDebugInfo(Graphics2D g2d);
+
+    /**
+     * @return the original width of the tile before any resizing
+     */
     abstract int getTileWidth();
+
+    /**
+     * @return the original height of the tile before any resizing
+     */
     abstract int getTileHeight();
 }

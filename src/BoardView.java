@@ -111,6 +111,7 @@ public class BoardView extends JLayeredPane {
     }
 
     //RESIZE
+
     /**
      * <p>Resize and relocate each tile on the board to match the window/world size ratio.</p>
      * @param size the new scaling factor for the tiles

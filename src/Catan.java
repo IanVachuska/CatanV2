@@ -46,6 +46,23 @@ public class Catan extends JFrame {//Controller
         setPreferredSize(setMinimumScreenSize());
         this.addComponentListener(new ResizeListener(this));
     }
+    public Catan(String boardTypeString, String boardSizeString, String boardModifiersString) {
+        System.out.println("CATAN");
+        int boardType=parseBoardType(boardTypeString);
+        int boardSize=parseBoardSize(boardSizeString);
+        int boardModifiers=parseBoardModifiers(boardModifiersString);
+
+        setLayout(new BorderLayout());
+        initControlPanels();
+        initGUIControls(boardType,boardSize,boardModifiers);
+        newBoard(boardType,boardSize,boardModifiers);
+        initBoardView();
+        pack();
+        setVisible(true);
+
+        setPreferredSize(setMinimumScreenSize());
+        this.addComponentListener(new ResizeListener(this));
+    }
     public Catan(String type) {
         StringTokenizer st = new StringTokenizer(type);
         int boardType=0, boardSize=0, boardFlags=0;
@@ -184,14 +201,6 @@ public class Catan extends JFrame {//Controller
     private void initWestPanel() {
         wp = new JPanel();
         wp.setBorder(BorderFactory.createLineBorder(Color.MAGENTA));
-        /*
-        JButton b1 = new JButton("Start");
-        JButton b2 = new JButton("Stop");
-        JButton b3 = new JButton("Reset");
-        JButton b4 = new JButton("Exit");
-
-
-         */
         wp.setBackground(Tile.getBiomeColor(Tile.OCEAN));
         add(wp, BorderLayout.WEST);
     }
@@ -200,6 +209,7 @@ public class Catan extends JFrame {//Controller
      */
     private void initSouthPanel() {
         sp = new JPanel();
+        wp.setBorder(BorderFactory.createLineBorder(Color.MAGENTA));
         sp.setBackground(Tile.getBiomeColor(Tile.OCEAN));
         add(sp, BorderLayout.SOUTH);
     }
@@ -214,13 +224,9 @@ public class Catan extends JFrame {//Controller
         JToggleButton toggleButton = new JToggleButton("Play");
         Dimension dim = new Dimension(180/3 - 10,22);
         toggleButton.setPreferredSize(dim);
-        toggleButton.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                ep.setVisible(!toggleButton.isSelected());
-                setMinimumScreenSize();
-            }
+        toggleButton.addActionListener(e -> {
+            ep.setVisible(!toggleButton.isSelected());
+            setMinimumScreenSize();
         });
         parent.add(toggleButton);
     }
@@ -235,8 +241,6 @@ public class Catan extends JFrame {//Controller
         button.setBackground(Tile.getBiomeColor(Tile.GOLD));
         Dimension dim = new Dimension(180/3 - 10,22);
         button.setPreferredSize(dim);
-        //button.setMaximumSize(dim);
-        //button.setMinimumSize(dim);
         parent.add(button);
     }
 
@@ -249,12 +253,7 @@ public class Catan extends JFrame {//Controller
         JButton button = new JButton("New");
         Dimension dim = new Dimension(180/3 - 10,22);
         button.setPreferredSize(dim);
-        button.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                newGame();
-            }
-        });
+        button.addActionListener(e -> newGame());
         parent.add(button);
     }
 
@@ -350,12 +349,7 @@ public class Catan extends JFrame {//Controller
         JRadioButton rb = new JRadioButton(actionCommand, selected);
         group.add(rb);
         rb.setActionCommand(actionCommand);
-        rb.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                newGame();
-            }
-        });
+        rb.addActionListener(e -> newGame());
         parent.add(rb);
     }
 
@@ -391,19 +385,14 @@ public class Catan extends JFrame {//Controller
      */
     private void addDebugBox(JPanel parent){
         debugBox = new JCheckBox("Debug");
-        debugBox.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if(debugBox.isSelected()){
-                    board.addFlags(Board.DEBUG);
-                }
-                else {
-                    board.removeFlags(Board.DEBUG);
-                }
-                board.updateTileDebugFlags();
-                //revalidate();
-                //repaint();
+        debugBox.addActionListener(e -> {
+            if(debugBox.isSelected()){
+                board.addFlags(Board.DEBUG);
             }
+            else {
+                board.removeFlags(Board.DEBUG);
+            }
+            board.updateTileDebugFlags();
         });
         addBoxHotKey("D", debugBox);
         parent.add(debugBox);
@@ -477,13 +466,10 @@ public class Catan extends JFrame {//Controller
      */
     private void addPortReshuffleButton(JPanel parent) {
         JButton button = new JButton("Reshuffle");
-        button.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                reshufflePorts();
-                revalidate();
-                repaint();
-            }
+        button.addActionListener(e -> {
+            reshufflePorts();
+            revalidate();
+            repaint();
         });
         parent.add(button);
     }
@@ -495,14 +481,7 @@ public class Catan extends JFrame {//Controller
      */
     private void addPortReplaceButton(JPanel parent) {
         JButton button = new JButton("Replace");
-        button.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                replacePorts();
-                //revalidate();
-                //repaint();
-            }
-        });
+        button.addActionListener(e -> replacePorts());
         parent.add(button);
     }
 
@@ -513,14 +492,7 @@ public class Catan extends JFrame {//Controller
      */
     private void addFixPortButton(JPanel parent) {
         JButton fixPortButton = new JButton("Fix");
-        fixPortButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                fixPorts();
-                //revalidate();
-                //repaint();
-            }
-        });
+        fixPortButton.addActionListener(e -> fixPorts());
         parent.add(fixPortButton);
     }
 
@@ -531,13 +503,10 @@ public class Catan extends JFrame {//Controller
      */
     private void addFlipPortButton(JPanel parent) {
         flipPortButton = new JToggleButton("Show");
-        flipPortButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                boolean show = flipPortButton.isSelected();
-                updateFlipPortButtonText(show);
-                flipPorts(show);
-            }
+        flipPortButton.addActionListener(e -> {
+            boolean show = flipPortButton.isSelected();
+            updateFlipPortButtonText(show);
+            flipPorts(show);
         });
         parent.add(flipPortButton);
     }
@@ -582,14 +551,7 @@ public class Catan extends JFrame {//Controller
      */
     private void addResourceReshuffleButton(JPanel parent) {
         JButton button = new JButton("Reshuffle Resources");
-        button.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                reshuffleResources();
-                //revalidate();
-                //repaint();
-            }
-        });
+        button.addActionListener(e -> reshuffleResources());
         parent.add(button);
     }
 
@@ -600,14 +562,7 @@ public class Catan extends JFrame {//Controller
      */
     private void addTokenReshuffleButton(JPanel parent) {
         JButton button = new JButton("Reshuffle Number");
-        button.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                reshuffleTokens();
-                //revalidate();
-                //repaint();
-            }
-        });
+        button.addActionListener(e -> reshuffleTokens());
         parent.add(button);
     }
 
@@ -618,14 +573,7 @@ public class Catan extends JFrame {//Controller
      */
     private void addHexReshuffleButton(JPanel parent) {
         JButton button = new JButton("Reshuffle Both");
-        button.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                hexReshuffle();
-                //revalidate();
-                //repaint();
-            }
-        });
+        button.addActionListener(e -> hexReshuffle());
         parent.add(button);
     }
 
@@ -636,14 +584,7 @@ public class Catan extends JFrame {//Controller
      */
     private void addUnflippedReshuffleButton(JPanel parent) {
         unflippedButton = new JButton("Reshuffle Unflipped");
-        unflippedButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                unflippedReshuffle();
-                //revalidate();
-                //repaint();
-            }
-        });
+        unflippedButton.addActionListener(e -> unflippedReshuffle());
         parent.add(unflippedButton);
     }
 
@@ -885,9 +826,6 @@ public class Catan extends JFrame {//Controller
      * <p>Console based test method for early stage development</p>
      */
     public void printBoardData(){
-        //board.testIterator(3,3);
-        //board.testHexSpiral();
-        //board.testFlags();
         System.out.print(board.toString());
         System.out.print(board.getSpiralString(new BiomeCommand()));
         System.out.println(board.getHexGridString(new TokenCommand()));
@@ -895,7 +833,6 @@ public class Catan extends JFrame {//Controller
         System.out.println(board.getHexGridString(new BiomeCommand()));
         System.out.println(board.getHexGridString(new TypeCommand()));
 
-        //board.clearBoard();
         System.out.println();
     }
 
@@ -926,14 +863,6 @@ public class Catan extends JFrame {//Controller
         bv.resize(min);
         revalidate();
         repaint();
-
-        /*
-        System.out.println("worldSize: (" + worldSize.width + "," + (worldSize.height - getInsets().top) + ")");
-        System.out.println("windowSize: (" + windowSize.width + "," + windowSize.height + ")");
-        System.out.println("x: " + x);
-        System.out.println("y: " + y);
-        System.out.println("min: " + min);
-        */
     }
     record ResizeListener(Catan catan) implements ComponentListener{
 
