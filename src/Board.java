@@ -169,8 +169,8 @@ public abstract class Board {
         int index = 0;
         while(index < getShuffledHexCount()){
             while (hex != null && valid[hex.getGridRow()][hex.getGridColumn()]){
-                hc.addToSpiral(hex, index);
                 hex.setId(index);
+                hc.addToSpiral(hex, index);
                 valid[hex.getGridRow()][hex.getGridColumn()] = false;
                 prev = hex;
                 hex = hc.get(hex, direction);

@@ -11,14 +11,14 @@ public class HexCollection {
     //FIELDS
     private final int columns;
     private final int offset;
-    private int gridSize;
 
+    private int gridSize;
     private final Hex[][] grid;
 
     private int spiralSize;
     private final Hex[] spiral;
 
-    //CONSTRUCTOR
+    //CONSTRUCTORS
     public HexCollection(Board board) {
         offset = board.getColumnOffset();
         columns = board.getHexGridDim().width;
@@ -30,57 +30,93 @@ public class HexCollection {
                 + board.getUnflippedHexCount();
         spiral = new Hex[totalHexCount];
     }
+
     //ADD
+
+    /**
+     * <p>Add the {@code hex} to the {@code hexGrid} collection.</p>
+     * <p>The row and column location that the {@code hex} gets inserted
+     * at is determined by the the {@code hex}'s {@code gridLocation}.</p>
+     * @param hex the object that gets added
+     */
     public void add(Hex hex){
         grid[hex.getGridRow()][hex.getGridColumn()] = hex;
         gridSize++;
     }
-    public void addToSpiral(Hex hex, int spiralIndex){
-        spiral[spiralIndex] = hex;
-        spiralSize = Math.max(spiralSize, spiralIndex);
+
+
+    /**
+     * <p>Add the {@code hex} to the {@code hexSpiral} collection.</p>
+     * <p>The location that the {@code hex} gets inserted into the array
+     * is determined by the {@code id} parameter. This value
+     * should match {@code hex}'s {@code id} field.</p>
+     * @param hex the object that gets added
+     * @param id the index in which the {@code hex} is inserted
+     */
+    public void addToSpiral(Hex hex, int id){
+        spiral[id] = hex;
+        spiralSize = Math.max(spiralSize, id);
     }
 
+
+    /**
+     * @param id the {@code id} of the {@code hex} you want to access
+     * @return the {@code hex} you want to access
+     */
     //UNIVERSAL GETTERS
-    public Hex get(int spiralIndex){
-        return spiral[spiralIndex];
+    public Hex get(int id){
+        return spiral[id];
     }
+
+
+    /**
+     * @param row the {@code row} of the {@code hex} you want to access
+     * @param col the {@code column} of the {@code hex} you want to access
+     * @return the {@code hex} you want to access
+     */
     public Hex get(int row, int col){
         return grid[row][col];
     }
+
+
+    /**
+     * <p>This function is intended to be used to access a {@code port}'s parent {@code hex}</p>
+     * @param tile the {@code column} of the {@code hex} you want to access
+     * @return the {@code hex} with the same {@code gridLocation}
+     */
     public Hex get(Tile tile){
         return grid[tile.getGridRow()][tile.getGridColumn()];
     }
+
+
     //PROXIMITY ACCESSORS
+
+    /**
+     *
+     * @param hex the object whose neighbor you want to access
+     * @param direction the six sided direction you want to access.
+     *                 <p>Use constants {@code TOP_LEFT}, {@code TOP_RIGHT}, {@code RIGHT}
+     *                  {@code BOTTOM_RIGHT},{@code BOTTOM_LEFT},{@code LEFT},</p>
+     *                 <p>or any integer between 0 and {@code Hex.SIDES}</p>
+     * @return the {@code hex} object in that direction if it exists, else returns null
+     */
     public Hex get(Hex hex, int direction){
-        Hex hexr = null;
-        switch (Math.floorMod(direction, Hex.SIDES)) {
-            case TOP_LEFT:
-                //System.out.println("TOP_LEFT");
-                hexr = getTopLeft(hex);
-                break;
-            case TOP_RIGHT:
-                //System.out.println("TOP_RIGHT");
-                hexr = getTopRight(hex);
-                break;
-            case RIGHT:
-                //System.out.println("RIGHT");
-                hexr = getRight(hex);
-                break;
-            case BOTTOM_RIGHT:
-                //System.out.println("BOTTOM_RIGHT");
-                hexr = getBottomRight(hex);
-                break;
-            case BOTTOM_LEFT:
-                // System.out.println("BOTTOM_LEFT");
-                hexr = getBottomLeft(hex);
-                break;
-            case LEFT:
-                //System.out.println("LEFT");
-                hexr = getLeft(hex);
-                break;
-        }
-        return hexr;
+        return switch (Math.floorMod(direction, Hex.SIDES)) {
+            case TOP_LEFT -> getTopLeft(hex);
+            case TOP_RIGHT -> getTopRight(hex);
+            case RIGHT -> getRight(hex);
+            case BOTTOM_RIGHT -> getBottomRight(hex);
+            case BOTTOM_LEFT -> getBottomLeft(hex);
+            case LEFT -> getLeft(hex);
+            default -> null;
+        };
     }
+
+
+    /**
+     * @param hex the object whose neighbor you want to access
+     * @return the {@code hex} object in the left direction if it exists, else returns null
+     */
     public Hex getLeft(Hex hex){
         int row = hex.getGridRow();
         int col = hex.getGridColumn() - 1;
@@ -89,6 +125,12 @@ public class HexCollection {
         }
         return null;
     }
+
+
+    /**
+     * @param hex the object whose neighbor you want to access
+     * @return the {@code hex} object in the right direction if it exists, else returns null
+     */
     public Hex getRight(Hex hex){
         int row = hex.getGridRow();
         int col = hex.getGridColumn() + 1;
@@ -97,6 +139,12 @@ public class HexCollection {
         }
         return null;
     }
+
+
+    /**
+     * @param hex the object whose neighbor you want to access
+     * @return the {@code hex} object in the top left direction if it exists, else returns null
+     */
     public Hex getTopLeft(Hex hex){
         int offset = applyLeftOffset(hex.getGridRow());
         int row = hex.getGridRow() - 1;
@@ -109,6 +157,12 @@ public class HexCollection {
         }
         return null;
     }
+
+
+    /**
+     * @param hex the object whose neighbor you want to access
+     * @return the {@code hex} object in the top right direction if it exists, else returns null
+     */
     public Hex getTopRight(Hex hex){
         int offset = applyRightOffset(hex.getGridRow());
         int row = hex.getGridRow() - 1;
@@ -121,6 +175,12 @@ public class HexCollection {
         }
         return null;
     }
+
+
+    /**
+     * @param hex the object whose neighbor you want to access
+     * @return the {@code hex} object in the bottom left direction if it exists, else returns null
+     */
     public Hex getBottomLeft(Hex hex){
         int offset = applyLeftOffset(hex.getGridRow());
         int row = hex.getGridRow() + 1;
@@ -133,6 +193,12 @@ public class HexCollection {
         }
         return null;
     }
+
+
+    /**
+     * @param hex the object whose neighbor you want to access
+     * @return the {@code hex} object in the bottom right direction if it exists, else returns null
+     */
     public Hex getBottomRight(Hex hex){
         int offset = applyRightOffset(hex.getGridRow());
         int row = hex.getGridRow() + 1;
@@ -146,23 +212,51 @@ public class HexCollection {
         return null;
     }
 
+
+    //ITERATOR ACCESSORS
+
+    /**
+     * @return an {@code IIterator} object for the {@code hexGrid} collection
+     */
     public IIterator<Hex> getGridIterator(){
         return new HexGridIterator();
     }
+
+
+    /**
+     * @return an {@code IIterator} object for the {@code hexSpiral} collection
+     */
     public IIterator<Hex> getSpiralIterator(){
         return new HexSpiralIterator();
     }
 
-    /* Helper functions for the above Top/Bottom getters
-     * Used to apply grid offsets in every other column*/
+    /**
+     * <p>Helper functions for the above Top/Bottom getters.
+     * Used to apply left grid offsets in every other column</p>
+     * @param row the row of the {@code hex} to be inserted
+     * @return and integer offset value, 0 or 1
+     */
     private int applyLeftOffset(int row){
         return (row%2 != offset)?0:1;
     }
+
+
+    /**
+     * <p>Helper functions for the above Top/Bottom getters.
+     * Used to apply right grid offsets in every other column</p>
+     * @param row the row of the {@code hex} to be inserted
+     * @return and integer offset value, 0 or 1
+     */
     private int applyRightOffset(int row){
         return (~applyLeftOffset(row))%2;
     }
 
-    //ITERATORS---------------------------------------------//
+
+//------------------------------ITERATOR CLASSES------------------------------//
+
+    /**
+     * <p>{@code IIterator} class for the {@code hexGrid} collection.</p>
+     */
     private class HexGridIterator implements IIterator<Hex>{
         //FIELDS
         private int index;
@@ -213,6 +307,10 @@ public class HexCollection {
         @Override
         public void setHead() {}
     }
+
+    /**
+     * <p>{@code IIterator} class for the {@code hexSpiral} collection.</p>
+     */
     private class HexSpiralIterator implements IIterator<Hex>{
         //FIELDS
         private int index;

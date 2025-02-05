@@ -561,7 +561,7 @@ public class Catan extends JFrame {//Controller
      * @param parent the parent container the button is to be added to
      */
     private void addTokenReshuffleButton(JPanel parent) {
-        JButton button = new JButton("Reshuffle Number");
+        JButton button = new JButton("Reshuffle Numbers");
         button.addActionListener(e -> reshuffleTokens());
         parent.add(button);
     }
@@ -689,7 +689,11 @@ public class Catan extends JFrame {//Controller
      * <p>Reshuffles each shuffleable hex's number token.</p>
      */
     public void reshuffleTokens(){
-        board.initHexSpiral(true);
+        if(board.getRandomFlag()){
+            board.shuffleTokens();
+        } else{
+            board.initHexSpiral(true);
+        }
         board.shuffleHexes(null);
     }
 

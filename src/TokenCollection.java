@@ -9,7 +9,6 @@ public class TokenCollection {
     private final IIterator<Integer> iterator;
 
     //CONSTRUCTORS
-
     public TokenCollection(int[] tokens) {
         this.tokens = new ArrayList<Integer>();
         for (int token : tokens) {
@@ -113,6 +112,8 @@ public class TokenCollection {
     }
 
 
+    //ITERATOR ACCESSORS
+
     /**
      * @return a new {@code IIterator} object for the {@code TokenCollection}
      */
@@ -121,6 +122,11 @@ public class TokenCollection {
     }
 
 
+//------------------------------ITERATOR CLASSES------------------------------//
+
+    /**
+     * <p>{@code IIterator} class for the {@code tokens} collection.</p>
+     */
     private class TokenIterator implements IIterator<Integer>{
         //FIELDS
         private int index;
