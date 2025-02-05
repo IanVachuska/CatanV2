@@ -36,44 +36,96 @@ public class PortCollection {
         return new ValidPortIterator();
     }
     private class AllPortIterator implements IIterator<Port>{
+        //FIELDS
         private int index;
 
+        //CONSTRUCTORS
         public AllPortIterator(){
             this.index = 0;
         }
+
+        //METHODS
+        /**
+         * @return {@code true} if there is another {@code port} in the collection, else {@code false}
+         */
         @Override
         public boolean hasNext() {
             return index < allPorts.size();
         }
+
+
+        /**
+         * @return the next {@code port} in the collection if it exists, else null
+         */
         @Override
         public Port getNext() {
-            return allPorts.get(index++);
+            if(hasNext()) {
+                return allPorts.get(index++);
+            }
+            else{
+                System.err.println("End of allPort collection");
+                return null;
+            }
         }
+
+
+        /**
+         * <p>Resets the iterator to its initial position.</p>
+         */
         @Override
         public void reset() {
             index = 0;
         }
+
+
+        //EMPTY BODY METHOD
         @Override
         public void setHead() {}
     }
     private class ValidPortIterator implements IIterator<Port>{
+        //FIELDS
         private int index;
 
+        //CONSTRUCTORS
         public ValidPortIterator(){
             this.index = 0;
         }
+
+        //METHODS
+        /**
+         * @return {@code true} if there is another port in the collection, else {@code false}
+         */
         @Override
         public boolean hasNext() {
             return index < ports.length;
         }
+
+
+        /**
+         * @return the next valid {@code port} in the collection if it exists, else null
+         */
         @Override
         public Port getNext() {
-            return ports[index++];
+            if(hasNext()) {
+                return ports[index++];
+            }
+            else{
+                System.err.println("End of port collection");
+                return null;
+            }
         }
+
+
+        /**
+         * <p>Resets the iterator to its initial position.</p>
+         */
         @Override
         public void reset() {
             index = 0;
         }
+
+
+        //EMPTY BODY METHOD
         @Override
         public void setHead() {}
     }

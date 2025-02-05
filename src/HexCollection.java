@@ -164,17 +164,29 @@ public class HexCollection {
 
     //ITERATORS---------------------------------------------//
     private class HexGridIterator implements IIterator<Hex>{
+        //FIELDS
         private int index;
         private int nullOffset;
 
+        //CONSTRUCTORS
         public HexGridIterator(){
             this.index = 0;
             this.nullOffset = 0;
         }
+
+        //METHODS
+        /**
+         * @return {@code true} if there is another {@code hex} in the collection, else {@code false}
+         */
         @Override
         public boolean hasNext() {
             return index < gridSize;
         }
+
+
+        /**
+         * @return the next {@code hex} in the {@code grid} collection if it exists, else null
+         */
         @Override
         public Hex getNext() {
             Hex hex;
@@ -186,32 +198,65 @@ public class HexCollection {
             return hex;
         }
 
+
+        /**
+         * <p>Resets the iterator to its initial position.</p>
+         */
         @Override
         public void reset() {
             index = 0;
             nullOffset = 0;
         }
+
+
+        //EMPTY BODY METHODS
         @Override
         public void setHead() {}
     }
     private class HexSpiralIterator implements IIterator<Hex>{
+        //FIELDS
         private int index;
 
+        //CONSTRUCTORS
         public HexSpiralIterator(){
             this.index = 0;
         }
+
+        //METHODS
+        /**
+         * @return {@code true} if there is another {@code hex} in the collection, else {@code false}
+         */
         @Override
         public boolean hasNext() {
             return index < spiralSize;
         }
+
+
+        /**
+         * @return the next {@code hex} in the {@code spiral} collection if it exists, else null
+         */
         @Override
         public Hex getNext() {
-            return spiral[index++];
+            if(hasNext()) {
+                return spiral[index++];
+            }
+            else{
+                System.err.println("End of spiral collection");
+                return null;
+            }
         }
+
+
+        /**
+         * <p>Resets the iterator to its initial position.</p>
+         */
         @Override
         public void reset() {
             index = 0;
         }
+
+
+        //EMPTY BODY METHODS
         @Override
         public void setHead() {}
     }
