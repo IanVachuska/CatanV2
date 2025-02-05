@@ -1,8 +1,17 @@
 
 public class SeafarersBoard extends Board{
+
+    //CONSTRUCTORS
     public SeafarersBoard(int boardSize, int flags) {
         super(boardSize, flags);
     }
+
+
+    //INITIALIZERS
+
+    /**
+     * <p>Initializes the {@code rows} and {@code columns} of the hexGrid</p>
+     */
     @Override
     public void initHexGridDim() {
         switch (getBoardSize()){
@@ -14,6 +23,12 @@ public class SeafarersBoard extends Board{
                 break;
         }
     }
+
+
+    /**
+     * <p>Sets the {@code shuffledHexCount}, {@code fixedHexCount},
+     * {@code unflippedHexCount}, {@code portCount} values</p>
+     */
     @Override
     public void initTileCounts() {
         switch (getBoardSize()){
@@ -25,21 +40,48 @@ public class SeafarersBoard extends Board{
                 break;
         }
     }
-    /* Sets the amount of each Biome for the Hex tiles */
+
+
+    /**
+     * Initializes the {@code resourceCount} array. This value is used to determine
+     * the number of occurrences of each {@code biome}. This value is used for fixed and shuffled
+     * hex types.
+     * <p>Unflipped hex types use an independent count</p>
+     */
     @Override
     public void initResourceCounts(){
         super.setResourceCounts(SeafarersBoardBuilder.getResources(getBoardSize()));
     }
-    /* Sets the amount of each Biome for the Port tiles */
+
+
+    /**
+     *  Initializes the {@code portCount} array. This value is used to determine
+     *  the number of occurrences of each port {@code biome}
+     */
     @Override
     public void initPortCounts(){
         super.setPortCounts(SeafarersBoardBuilder.getPorts(getBoardSize()));
     }
-    /* Sets the token array with each number in order */
+
+
+    /**
+     * <p>Initializes the {@code TokenCollection} with an array of ordered integer token values.</p>
+     */
     @Override
     public void initTokens(){
         super.setTokens(SeafarersBoardBuilder.getTokens(getBoardSize()));
     }
+
+
+    /**
+     * <p>Calculates and returns the hex located at each of the boards 6 corners</p>
+     * <p>Adds a 2 column buffer to each side of the board to account for the fixed pieces</p>
+     * @param startPosition Use random values between 0 and {@code Hex.SIDES} or constants
+     *      {@code HexCollection.TOP_LEFT}, {@code HexCollection.TOP_RIGHT},
+     *      {@code HexCollection.RIGHT}, {@code HexCollection.BOTTOM_RIGHT},
+     *      {@code HexCollection.BOTTOM_LEFT}, {@code HexCollection.LEFT}
+     * @return the starting {@code hex} in the {@code hexSpiral}
+     */
     @Override
     public Hex getStartingHex(int startPosition) {
         if(getRandomFlag()){
@@ -51,6 +93,17 @@ public class SeafarersBoard extends Board{
             default -> null;
         };
     }
+
+
+    /**
+     * <p>Helper function for {@code getStartingHex(int)}, this function is called
+     * when the board {@code size} is equal to {@code Board.SMALL_BOARD}</p>
+     * @param startPosition Use random values between 0 and {@code Hex.SIDES} or constants
+     *      {@code HexCollection.TOP_LEFT}, {@code HexCollection.TOP_RIGHT},
+     *      {@code HexCollection.RIGHT}, {@code HexCollection.BOTTOM_RIGHT},
+     *      {@code HexCollection.BOTTOM_LEFT}, {@code HexCollection.LEFT}
+     * @return the starting {@code hex} in the {@code hexSpiral}
+     */
     private Hex getStartingHexSmall(int startPosition) {
         HexCollection hc = getHexCollection();
         int rows = getHexGridDim().height;
@@ -65,6 +118,17 @@ public class SeafarersBoard extends Board{
             default -> null;
         };
     }
+
+
+    /**
+     * <p>Helper function for {@code getStartingHex(int)}, this function is called
+     * when the board {@code size} is equal to {@code Board.LARGE_BOARD}</p>
+     * @param startPosition Use random values between 0 and {@code Hex.SIDES} or constants
+     *      {@code HexCollection.TOP_LEFT}, {@code HexCollection.TOP_RIGHT},
+     *      {@code HexCollection.RIGHT}, {@code HexCollection.BOTTOM_RIGHT},
+     *      {@code HexCollection.BOTTOM_LEFT}, {@code HexCollection.LEFT}
+     * @return the starting {@code hex} in the {@code hexSpiral}
+     */
     private Hex getStartingHexLarge(int startPosition) {
         HexCollection hc = getHexCollection();
         int rows = getHexGridDim().height;
@@ -81,6 +145,12 @@ public class SeafarersBoard extends Board{
             default -> null;
         };
     }
+
+
+    /**
+     * <p>Helper function for {@code placeFixedTiles()}, this function is called
+     * when the board {@code size} is equal to {@code Board.SMALL_BOARD}.</p>
+     */
     @Override
     public void placeFixedTilesSmall(){
         int r = 0, c = 1, id = getShuffledHexCount();
@@ -120,6 +190,12 @@ public class SeafarersBoard extends Board{
         placeFixedHex(r, c++, id++, Tile.OCEAN);
         placeFixedHex(r, c  , id++, Tile.OCEAN);
     }
+
+
+    /**
+     * <p>Helper function for {@code placeFixedTiles()}, this function is called
+     * when the board {@code size} is equal to {@code Board.LARGE_BOARD}.</p>
+     */
     @Override
     public void placeFixedTilesLarge(){
         int r = 0, c = 1, id = getShuffledHexCount();
@@ -172,15 +248,25 @@ public class SeafarersBoard extends Board{
         placeFixedHex(r, c  , id++, Tile.GOLD);
     }
 
+
     //EMPTY BODY METHODS
     @Override
     public void setHexGridDim(int rows, int cols) {}
     @Override
     public void setTileCounts(int randomHexCount, int fixedHexCount, int unflippedHexCount, int portCount) {}
     @Override
+    public void setResourceCounts(int[] resourceCounts) {}
+    @Override
+    public void setPortCounts(int[] portCounts) {}
+    @Override
+    public void setTokens(int[] tokenCounts) {}
+
+    @Override
     public void placeUnflippedTilesSmall() {}
     @Override
     public void placeUnflippedTilesLarge() {}
+
+    //--------------------------------------------------------------------------------------
 
     public static class SeafarersBoardBuilder{
         //RESOURCES

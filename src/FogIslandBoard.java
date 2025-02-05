@@ -1,18 +1,16 @@
 public class FogIslandBoard extends Board implements IFlippable {
+
+    //CONSTRUCTORS
     public FogIslandBoard(int boardSize, int flags) {
         super(boardSize, flags);
     }
-    @Override
-    public void poolHexCounts(){
-        super.poolHexCounts();
-        combineResourceCount(
-                    FogIslandBoardBuilder.getUnflippedResources(getBoardSize()));
-        TokenCollection tc = new TokenCollection(
-                    FogIslandBoardBuilder.getUnflippedTokens(getBoardSize()));
-        tc.shuffle();
-        combineTokenCollections(tc);
 
-    }
+
+    //INITIALIZERS
+
+    /**
+     * <p>Initializes the {@code rows} and {@code columns} of the hexGrid</p>
+     */
     @Override
     public void initHexGridDim() {
         super.setHexGridDim(7,11);
@@ -28,6 +26,12 @@ public class FogIslandBoard extends Board implements IFlippable {
 
         */
     }
+
+
+    /**
+     * <p>Sets the {@code shuffledHexCount}, {@code fixedHexCount},
+     * {@code unflippedHexCount}, {@code portCount} values</p>
+     */
     @Override
     public void initTileCounts() {
 
@@ -47,22 +51,132 @@ public class FogIslandBoard extends Board implements IFlippable {
 
 
     }
+
+
+    /**
+     * Initializes the {@code resourceCount} array. This value is used to determine
+     * the number of occurrences of each {@code biome}. This value is used for fixed and shuffled
+     * hex types.
+     * <p>Unflipped hex types use an independent count</p>
+     */
     @Override
     public void initResourceCounts() {
         super.setResourceCounts(FogIslandBoardBuilder.getResources(getBoardSize()));
     }
+
+
+    /**
+     *  Initializes the {@code portCount} array. This value is used to determine
+     *  the number of occurrences of each port {@code biome}
+     */
     @Override
     public void initPortCounts() {
         super.setPortCounts(FogIslandBoardBuilder.getPorts(getBoardSize()));
     }
+
+
+    /**
+     * <p>Initializes the {@code TokenCollection} with an array of ordered integer token values.</p>
+     */
     @Override
     public void initTokens() {
         super.setTokens(FogIslandBoardBuilder.getTokens(getBoardSize()));
     }
+
+
+    /**
+     * <p>Calculates and returns the hex located at one of the 4 corners in the group of shuffled hexes</p>
+     * <p>Values of Right and Left are equivalent to Top Right and Top Left respectively.</p>
+     * @param startPosition Use random values between 0 and {@code Hex.SIDES} or constants
+     *      {@code HexCollection.TOP_LEFT}, {@code HexCollection.TOP_RIGHT},
+     *      {@code HexCollection.RIGHT}, {@code HexCollection.BOTTOM_RIGHT},
+     *      {@code HexCollection.BOTTOM_LEFT}, {@code HexCollection.LEFT}
+     * @return the starting {@code hex} in the {@code hexSpiral}
+     */
+    @Override
+    public Hex getStartingHex(int startPosition) {
+        if(getRandomFlag()){
+            return super.getStartingHex(startPosition);
+        }
+        return switch (getBoardSize()) {
+            case Board.SMALL_BOARD -> getStartingHexSmall(startPosition);
+            case Board.LARGE_BOARD -> getStartingHexLarge(startPosition);
+            default -> null;
+        };
+    }
+
+
+    /**
+     * <p>Helper function for {@code getStartingHex(int)}, this function is called
+     * when the board {@code size} is equal to {@code Board.SMALL_BOARD}</p>
+     * @param startPosition Use random values between 0 and {@code Hex.SIDES} or constants
+     *      {@code HexCollection.TOP_LEFT}, {@code HexCollection.TOP_RIGHT},
+     *      {@code HexCollection.RIGHT}, {@code HexCollection.BOTTOM_RIGHT},
+     *      {@code HexCollection.BOTTOM_LEFT}, {@code HexCollection.LEFT}
+     * @return the starting {@code hex} in the {@code hexSpiral}
+     */
+    private Hex getStartingHexSmall(int startPosition) {
+        return getStartingHexLarge(startPosition);
+    }
+
+
+    /**
+     * <p>Helper function for {@code getStartingHex(int)}, this function is called
+     * when the board {@code size} is equal to {@code Board.LARGE_BOARD}</p>
+     * @param startPosition Use random values between 0 and {@code Hex.SIDES} or constants
+     *      {@code HexCollection.TOP_LEFT}, {@code HexCollection.TOP_RIGHT},
+     *      {@code HexCollection.RIGHT}, {@code HexCollection.BOTTOM_RIGHT},
+     *      {@code HexCollection.BOTTOM_LEFT}, {@code HexCollection.LEFT}
+     * @return the starting {@code hex} in the {@code hexSpiral}
+     */
+    private Hex getStartingHexLarge(int startPosition) {
+        HexCollection hc = getHexCollection();
+        int rows = getHexGridDim().height;
+        int cols = getHexGridDim().width;
+        int o = getColumnOffset();
+        return switch (startPosition%Hex.SIDES) {
+            case HexCollection.TOP_LEFT -> hc.get(0, 1);
+            case HexCollection.TOP_RIGHT -> hc.get(0, 8);
+            case HexCollection.RIGHT -> hc.get(0, 8);
+            case HexCollection.BOTTOM_RIGHT -> hc.get(2, 7);
+            case HexCollection.BOTTOM_LEFT -> hc.get(2, 2);
+            case HexCollection.LEFT -> hc.get(0, 1);
+            default -> null;
+        };
+    }
+
+
+    /**
+     * <p>Pool all hex counts into shuffledHexCount.
+     * Combine {@code shuffled} and {@code unflipped} resource counts and token array</p>
+     */
+    @Override
+    public void poolHexCounts(){
+        super.poolHexCounts();
+        combineResourceCount(
+                FogIslandBoardBuilder.getUnflippedResources(getBoardSize()));
+        TokenCollection tc = new TokenCollection(
+                FogIslandBoardBuilder.getUnflippedTokens(getBoardSize()));
+        tc.shuffle();
+        combineTokenCollections(tc);
+
+    }
+
+
+    /**
+     * <p>Helper function for {@code placeFixedTiles()}, this function is called
+     * when the board {@code size} is equal to {@code Board.SMALL_BOARD}.</p>
+     */
     @Override
     public void placeFixedTilesSmall(){
         placeFixedTilesLarge();
     }
+
+
+    /**
+     * <p>Helper function for {@code placeFixedTiles()}, this function is called
+     * when the board {@code size} is equal to {@code Board.LARGE_BOARD}.</p>
+     */
     @Override
     public void placeFixedTilesLarge(){
         int id = getShuffledHexCount();
@@ -90,10 +204,22 @@ public class FogIslandBoard extends Board implements IFlippable {
         placeFixedHex(6,1, id++, Tile.GOLD);
         placeFixedHex(6,8, id++, Tile.GOLD);
     }
+
+
+    /**
+     * <p>Helper function for {@code placeUnflippedTiles()}, this function is called
+     * when the board {@code size} is equal to {@code Board.SMALL_BOARD}.</p>
+     */
     @Override
     public void placeUnflippedTilesSmall() {
         placeUnflippedTilesLarge();
     }
+
+
+    /**
+     * <p>Helper function for {@code placeUnflippedTiles()}, this function is called
+     * when the board {@code size} is equal to {@code Board.LARGE_BOARD}.</p>
+     */
     @Override
     public void placeUnflippedTilesLarge() {
         int s = getShuffledHexCount() + getFixedHexCount();
@@ -124,6 +250,12 @@ public class FogIslandBoard extends Board implements IFlippable {
         System.out.println(s+i);
         shuffleUnflippedHexes();
     }
+
+
+    /**
+     * Shuffles the unflipped hexes' biome and token
+     */
+    @Override
     public void shuffleUnflippedHexes(){
         TokenCollection tokenCollection = new TokenCollection(
                 FogIslandBoardBuilder.getUnflippedTokens(getBoardSize()));
@@ -133,49 +265,21 @@ public class FogIslandBoard extends Board implements IFlippable {
         shuffleHexes(FogIslandBoardBuilder.getUnflippedResources(getBoardSize()),
                 tokenCollection, s, s+u);
     }
+
+
+    //EMPTY BODY METHODS
     @Override
-    public Hex getStartingHex(int startPosition) {
-        if(getRandomFlag()){
-            return super.getStartingHex(startPosition);
-        }
-        return switch (getBoardSize()) {
-            case Board.SMALL_BOARD -> getStartingHexSmall(startPosition);
-            case Board.LARGE_BOARD -> getStartingHexLarge(startPosition);
-            default -> null;
-        };
-    }
-    private Hex getStartingHexSmall(int startPosition) {
-        return getStartingHexLarge(startPosition);
-        /*
-        HexCollection hc = getHexCollection();
-        int rows = getHexGridDim().height;
-        int cols = getHexGridDim().width;
-        return switch (startPosition) {
-            case HexCollection.TOP_LEFT -> hc.get(1, 1);
-            case HexCollection.TOP_RIGHT -> hc.get(1, 3);
-            case HexCollection.RIGHT -> hc.get(2, 3);
-            case HexCollection.BOTTOM_RIGHT -> hc.get(4, 2);
-            case HexCollection.BOTTOM_LEFT -> hc.get(4, 0);
-            case HexCollection.LEFT -> hc.get(3, 0);
-            default -> null;
-        };
-        */
-    }
-    private Hex getStartingHexLarge(int startPosition) {
-        HexCollection hc = getHexCollection();
-        int rows = getHexGridDim().height;
-        int cols = getHexGridDim().width;
-        int o = getColumnOffset();
-        return switch (startPosition%Hex.SIDES) {
-            case HexCollection.TOP_LEFT -> hc.get(0, 1);
-            case HexCollection.TOP_RIGHT -> hc.get(0, 8);
-            case HexCollection.RIGHT -> hc.get(0, 8);
-            case HexCollection.BOTTOM_RIGHT -> hc.get(2, 7);
-            case HexCollection.BOTTOM_LEFT -> hc.get(2, 2);
-            case HexCollection.LEFT -> hc.get(0, 1);
-            default -> null;
-        };
-    }
+    public void setHexGridDim(int rows, int cols) {}
+    @Override
+    public void setTileCounts(int randomHexCount, int fixedHexCount, int unflippedHexCount, int portCount) {}
+    @Override
+    public void setResourceCounts(int[] resourceCounts) {}
+    @Override
+    public void setPortCounts(int[] portCounts) {}
+    @Override
+    public void setTokens(int[] tokenCounts) {}
+
+    //--------------------------------------------------------------------------------------
 
     public static class FogIslandBoardBuilder{
         //RESOURCES

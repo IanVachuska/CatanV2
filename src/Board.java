@@ -45,6 +45,7 @@ public abstract class Board {
         initBoard();
     }
 
+
     //INITIALIZERS
 
     /**
@@ -109,10 +110,11 @@ public abstract class Board {
 
 
     /**
-     * <p>Wrapper function for initHexSpiral(int startPosition, int orientation).</p>
-     * @param randomStart <p>True -> Initializes hexSpiral(int, int) randomly.</p>
-     *                    <p>False -> Initializes hexSpiral(int, int) with
-     *                    default value (0,1) or previous value.</p>
+     * <p>Wrapper function for {@code initHexSpiral(int startPosition, int orientation)}.</p>
+     * @param randomStart <p>{@code true} -> Initializes the hex spiral
+     *                   with a random {@code startPosition} and {@code orientation}.</p>
+     *                    <p>{@code false} -> Initializes the hex Spiral
+     *                    with the default value (0,1) or previous value.</p>
      */
     public void initHexSpiral(boolean randomStart) {
         if(randomStart) {
@@ -129,14 +131,12 @@ public abstract class Board {
 
     /**
      * <p>Initializes the hex spiral in HexCollection based of the starting hex and orientation.</p>
-     * @param startPosition <p>0->Top Left</p>
-     *                      <p>1->Top Right</p>
-     *                      <p>2->Right</p>
-     *                      <p>3->Bottom Right</p>
-     *                      <p>4->Bottom Left</p>
-     *                      <p>5->Left</p>
-     * @param orientation <p>1->ClockWise</p>
-     *                    <p>-1->CounterClockWise</p>
+     * @param startPosition Use random values between 0 and {@code Hex.SIDES} or constants
+     *      {@code HexCollection.TOP_LEFT}, {@code HexCollection.TOP_RIGHT},
+     *      {@code HexCollection.RIGHT}, {@code HexCollection.BOTTOM_RIGHT},
+     *      {@code HexCollection.BOTTOM_LEFT}, {@code HexCollection.LEFT}
+     *
+     * @param orientation use constants {@code Board.CLOCKWISE}, and {@code Board.COUNTER_CLOCKWISE}
      */
     public void initHexSpiral(int startPosition, int orientation){
         this.startPosition = startPosition;
@@ -184,14 +184,12 @@ public abstract class Board {
 
 
     /**
-     * <p>Helper function for initHexSpiral(int, int)</p>
-     * @param startPosition <p>0->Top Left</p>
-     *                      <p>1->Top Right</p>
-     *                      <p>2->Right</p>
-     *                      <p>3->Bottom Right</p>
-     *                      <p>4->Bottom Left</p>
-     *                      <p>5->Left</p>
-     * @return The starting hex, one of 6 hexagonal corners
+     * <p>Calculates and returns the hex located at each of the boards 6 corners</p>
+     * @param startPosition Use random values between 0 and {@code Hex.SIDES} or constants
+     *      {@code HexCollection.TOP_LEFT}, {@code HexCollection.TOP_RIGHT},
+     *      {@code HexCollection.RIGHT}, {@code HexCollection.BOTTOM_RIGHT},
+     *      {@code HexCollection.BOTTOM_LEFT}, {@code HexCollection.LEFT}
+     * @return the starting {@code hex} in the {@code hexSpiral}
      */
     public Hex getStartingHex(int startPosition){
         int rows = getHexGridDim().height;
@@ -208,7 +206,18 @@ public abstract class Board {
         };
     }
 
+
     //BOARD CONTROL
+
+    /**
+     * <p>Pool all hex counts into shuffledHexCount.</p>
+     */
+    public void poolHexCounts(){
+        shuffledHexCount += fixedHexCount + unflippedHexCount;
+        fixedHexCount = 0;
+        unflippedHexCount = 0;
+    }
+
 
     /**
      * <p>Wrapper function placeFixedTilesSmall/placeFixedTilesLarge.</p>
@@ -510,16 +519,6 @@ public abstract class Board {
 
 
     /**
-     * <p>Pool all hex counts into shuffledHexCount.</p>
-     */
-    public void poolHexCounts(){
-        shuffledHexCount += fixedHexCount + unflippedHexCount;
-        fixedHexCount = 0;
-        unflippedHexCount = 0;
-    }
-
-
-    /**
      * <p>Update each tile's debug flag to the boards current debug flag value.</p>
      */
     public void updateTileDebugFlags() {
@@ -587,6 +586,7 @@ public abstract class Board {
             port.setFlipped(false);
         }
     }
+
 
     //UTILITY
 
@@ -700,6 +700,7 @@ public abstract class Board {
     public void combineTokenCollections(TokenCollection unflippedTokenCollection){
         tc.addAll(unflippedTokenCollection);
     }
+
 
     //SETTERS
 

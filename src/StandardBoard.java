@@ -1,11 +1,17 @@
 
 public class StandardBoard extends Board {
+
     //CONSTRUCTORS
     public StandardBoard(int boardSize, int flags) {
         super(boardSize, flags);
     }
+
+
     //INITIALIZERS
-    /* Initializes the rows and columns of the hexGrid */
+
+    /**
+     * <p>Initializes the {@code rows} and {@code columns} of the hexGrid</p>
+     */
     public void initHexGridDim() {
         switch (getBoardSize()){
             case Board.SMALL_BOARD:
@@ -16,7 +22,12 @@ public class StandardBoard extends Board {
                 break;
         }
     }
-    /* Sets the total amounts of Hex and Port tiles in the game */
+
+
+    /**
+     * <p>Sets the {@code shuffledHexCount}, {@code fixedHexCount},
+     * {@code unflippedHexCount}, {@code portCount} values</p>
+     */
     public void initTileCounts() {
         switch (getBoardSize()){
             case Board.SMALL_BOARD:
@@ -27,21 +38,48 @@ public class StandardBoard extends Board {
                 break;
         }
     }
-    /* Sets the amount of each Biome for the Hex tiles */
+
+
+    /**
+     * Initializes the {@code resourceCount} array. This value is used to determine
+     * the number of occurrences of each {@code biome}. This value is used for fixed and shuffled
+     * hex types.
+     * <p>Unflipped hex types use an independent count</p>
+     */
     public void initResourceCounts(){
         super.setResourceCounts(StandardBoardBuilder.getResources(getBoardSize()));
     }
-    /* Sets the amount of each Biome for the Port tiles */
+
+
+    /**
+     *  Initializes the {@code portCount} array. This value is used to determine
+     *  the number of occurrences of each port {@code biome}
+     */
     public void initPortCounts(){
         super.setPortCounts(StandardBoardBuilder.getPorts(getBoardSize()));
     }
-    /* Sets the token array with each number in order */
+
+
+    /**
+     * <p>Initializes the {@code TokenCollection} with an array of ordered integer token values.</p>
+     */
     public void initTokens(){
         super.setTokens(StandardBoardBuilder.getTokens(getBoardSize()));
     }
 
 
     //EMPTY BODY METHODS
+    @Override
+    public void setHexGridDim(int rows, int cols) {}
+    @Override
+    public void setTileCounts(int randomHexCount, int fixedHexCount, int unflippedHexCount, int portCount) {}
+    @Override
+    public void setResourceCounts(int[] resourceCounts) {}
+    @Override
+    public void setPortCounts(int[] portCounts) {}
+    @Override
+    public void setTokens(int[] tokenCounts) {}
+
     @Override
     public void placeFixedTilesSmall() {}
     @Override
@@ -50,11 +88,6 @@ public class StandardBoard extends Board {
     public void placeUnflippedTilesSmall() {}
     @Override
     public void placeUnflippedTilesLarge() {}
-
-    @Override
-    public void setHexGridDim(int rows, int cols) {}
-    @Override
-    public void setTileCounts(int randomHexCount, int fixedHexCount, int unflippedHexCount, int portCount) {}
 
     //--------------------------------------------------------------------------------------
 
