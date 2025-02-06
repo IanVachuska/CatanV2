@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Random;
 
@@ -14,7 +13,7 @@ public class TokenCollection {
         for (int token : tokens) {
             this.tokens.add(token);
         }
-        iterator = this.getIterator();
+        iterator = this.getTokenIterator();
     }
 
 
@@ -117,7 +116,7 @@ public class TokenCollection {
     /**
      * @return a new {@code IIterator} object for the {@code TokenCollection}
      */
-    public IIterator<Integer> getIterator(){
+    public IIterator<Integer> getTokenIterator(){
         return new TokenIterator();
     }
 

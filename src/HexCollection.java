@@ -15,14 +15,14 @@ public class HexCollection {
     private int gridSize;
     private final Hex[][] grid;
 
-    private int spiralSize;
+    //private int spiralSize;
     private final Hex[] spiral;
 
     //CONSTRUCTORS
     public HexCollection(Board board) {
         offset = board.getColumnOffset();
         columns = board.getHexGridDim().width;
-        spiralSize = 0;
+        //spiralSize = 0;
         gridSize = 0;
         grid = new Hex[board.getHexGridDim().height][columns];
         int totalHexCount = board.getShuffledHexCount()
@@ -39,7 +39,7 @@ public class HexCollection {
      * at is determined by the the {@code hex}'s {@code gridLocation}.</p>
      * @param hex the object that gets added
      */
-    public void add(Hex hex){
+    public void addToGrid(Hex hex){
         grid[hex.getGridRow()][hex.getGridColumn()] = hex;
         gridSize++;
     }
@@ -48,24 +48,14 @@ public class HexCollection {
     /**
      * <p>Add the {@code hex} to the {@code hexSpiral} collection.</p>
      * <p>The location that the {@code hex} gets inserted into the array
-     * is determined by the {@code id} parameter. This value
-     * should match {@code hex}'s {@code id} field.</p>
+     * is determined by the {@code hex}'s {@code id} field.</p>
+     * <p>You must set the {@code id} field of the {@code hex}
+     * you are inserting before calling this method</p>
      * @param hex the object that gets added
-     * @param id the index in which the {@code hex} is inserted
      */
-    public void addToSpiral(Hex hex, int id){
+    public void addToSpiral(Hex hex){
+        int id = hex.getId();
         spiral[id] = hex;
-        spiralSize = Math.max(spiralSize, id);
-    }
-
-
-    /**
-     * @param id the {@code id} of the {@code hex} you want to access
-     * @return the {@code hex} you want to access
-     */
-    //UNIVERSAL GETTERS
-    public Hex get(int id){
-        return spiral[id];
     }
 
 
@@ -76,6 +66,16 @@ public class HexCollection {
      */
     public Hex get(int row, int col){
         return grid[row][col];
+    }
+
+
+    /**
+     * @param id the {@code id} of the {@code hex} you want to access
+     * @return the {@code hex} you want to access
+     */
+    //UNIVERSAL GETTERS
+    public Hex get(int id){
+        return spiral[id];
     }
 
 
@@ -100,7 +100,7 @@ public class HexCollection {
      *                 <p>or any integer between 0 and {@code Hex.SIDES}</p>
      * @return the {@code hex} object in that direction if it exists, else returns null
      */
-    public Hex get(Hex hex, int direction){
+    public Hex getNeighbor(Hex hex, int direction){
         return switch (Math.floorMod(direction, Hex.SIDES)) {
             case TOP_LEFT -> getTopLeft(hex);
             case TOP_RIGHT -> getTopRight(hex);
@@ -326,7 +326,7 @@ public class HexCollection {
          */
         @Override
         public boolean hasNext() {
-            return index < spiralSize;
+            return index < spiral.length;
         }
 
 

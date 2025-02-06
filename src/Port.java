@@ -15,8 +15,8 @@ public class Port extends Tile {
     //local coordinates
     private int width;
     private int height;
-    private int shiftX;
-    private int shiftY;
+    private int offsetX;
+    private int offsetY;
 
 
     //CONSTRUCTORS
@@ -46,8 +46,8 @@ public class Port extends Tile {
         bounds.y = -bounds.height/2;
 
 
-        initHexShift();
-        bounds.translate(shiftX,shiftY);
+        initOffset();
+        bounds.translate(offsetX, offsetY);
         setBounds(bounds);
     }
 
@@ -128,39 +128,39 @@ public class Port extends Tile {
     }
 
     /**
-     * <p>Sets the horizontal and vertical shifts based on the current angle</p>
+     * <p>Sets the horizontal and vertical offsets based on the current angle</p>
      */
-    private void initHexShift(){
-        shiftX = (int)(Math.round((float)hex.getTileWidth()/2) * Math.cos(angle));
-        shiftY = (int)(Math.round((float)hex.getTileHeight()/2) * Math.sin(angle));
+    private void initOffset(){
+        offsetX = (int)(Math.round((float)hex.getTileWidth()/2) * Math.cos(angle));
+        offsetY = (int)(Math.round((float)hex.getTileHeight()/2) * Math.sin(angle));
         int xo = 2;
         int yo = 4;
         int ao = 30;
         switch(getAngle()){
             case 0:
-                shiftX += xo;
+                offsetX += xo;
                 break;
             case 60:
-                shiftX += xo;
-                shiftY -= yo;
+                offsetX += xo;
+                offsetY -= yo;
                 angleOffset = -ao;
                 break;
             case 120:
-                shiftX -= xo;
-                shiftY -= yo;
+                offsetX -= xo;
+                offsetY -= yo;
                 angleOffset = ao;
                 break;
             case 180:
-                shiftX -= xo;
+                offsetX -= xo;
                 break;
             case 240:
-                shiftX -= xo;
-                shiftY += yo;
+                offsetX -= xo;
+                offsetY += yo;
                 angleOffset = -ao;
                 break;
             case 300:
-                shiftX += xo;
-                shiftY += yo;
+                offsetX += xo;
+                offsetY += yo;
                 angleOffset = ao;
                 break;
         }
@@ -230,13 +230,13 @@ public class Port extends Tile {
      * @return the horizontal offset of the port compared to its parent hex
      */
     public int getXOffset() {
-        return shiftX;
+        return offsetX;
     }
 
     /**
      * @return the vertical offset of the port compared to its parent hex
      */
     public int getYOffset() {
-        return shiftY;
+        return offsetY;
     }
 }

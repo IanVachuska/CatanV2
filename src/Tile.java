@@ -62,7 +62,7 @@ public abstract class Tile extends JButton implements IDrawable{
 
     private final Point gridLocation;
     private final Point worldLocation;
-    private final AffineTransform scale;
+    private final AffineTransform size;
 
     private BasicStroke stroke;
     private final Font debugFont;
@@ -72,7 +72,7 @@ public abstract class Tile extends JButton implements IDrawable{
     public Tile() {
         this.gridLocation = new Point();
         this.worldLocation = new Point();
-        this.scale = new AffineTransform();
+        this.size = new AffineTransform();
 
         this.biome = UNFLIPPED_RESOURCE;
         this.id = 0;
@@ -174,8 +174,8 @@ public abstract class Tile extends JButton implements IDrawable{
      * @param size the value to be scaled by
      */
     public void setScale(double size){
-        scale.setToIdentity();
-        this.scale.scale(size,size);
+        this.size.setToIdentity();
+        this.size.scale(size,size);
     }
 
 
@@ -309,7 +309,7 @@ public abstract class Tile extends JButton implements IDrawable{
      * @return the {@code AffineTransform} object representing the size change from world to window view
      */
     public AffineTransform getScale(){
-        return scale;
+        return size;
     }
 
 

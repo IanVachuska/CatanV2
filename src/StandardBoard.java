@@ -12,6 +12,7 @@ public class StandardBoard extends Board {
     /**
      * <p>Initializes the {@code rows} and {@code columns} of the hexGrid</p>
      */
+    @Override
     public void initHexGridDim() {
         switch (getBoardSize()){
             case Board.SMALL_BOARD:
@@ -28,6 +29,7 @@ public class StandardBoard extends Board {
      * <p>Sets the {@code shuffledHexCount}, {@code fixedHexCount},
      * {@code unflippedHexCount}, {@code portCount} values</p>
      */
+    @Override
     public void initTileCounts() {
         switch (getBoardSize()){
             case Board.SMALL_BOARD:
@@ -46,6 +48,7 @@ public class StandardBoard extends Board {
      * hex types.
      * <p>Unflipped hex types use an independent count</p>
      */
+    @Override
     public void initResourceCounts(){
         super.setResourceCounts(StandardBoardBuilder.getResources(getBoardSize()));
     }
@@ -55,6 +58,7 @@ public class StandardBoard extends Board {
      *  Initializes the {@code portCount} array. This value is used to determine
      *  the number of occurrences of each port {@code biome}
      */
+    @Override
     public void initPortCounts(){
         super.setPortCounts(StandardBoardBuilder.getPorts(getBoardSize()));
     }
@@ -63,6 +67,7 @@ public class StandardBoard extends Board {
     /**
      * <p>Initializes the {@code TokenCollection} with an array of ordered integer token values.</p>
      */
+    @Override
     public void initTokens(){
         super.setTokens(StandardBoardBuilder.getTokens(getBoardSize()));
     }

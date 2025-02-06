@@ -60,14 +60,6 @@ public class PortCollection {
     }
 
 
-    /**
-     * @return an {@code IIterator} object for the {@code port} collection
-     */
-    public IIterator<Port> getValidPortIterator(){
-        return new ValidPortIterator();
-    }
-
-
 //------------------------------ITERATOR CLASSES------------------------------//
 
     /**
@@ -103,58 +95,6 @@ public class PortCollection {
             }
             else{
                 System.err.println("End of allPort collection");
-                return null;
-            }
-        }
-
-
-        /**
-         * <p>Resets the iterator to its initial position.</p>
-         */
-        @Override
-        public void reset() {
-            index = 0;
-        }
-
-
-        //EMPTY BODY METHOD
-        @Override
-        public void setHead() {}
-    }
-
-
-    /**
-     * <p>{@code IIterator} class for the {@code port} collection.</p>
-     */
-    private class ValidPortIterator implements IIterator<Port>{
-        //FIELDS
-        private int index;
-
-        //CONSTRUCTORS
-        public ValidPortIterator(){
-            this.index = 0;
-        }
-
-        //METHODS
-        /**
-         * @return {@code true} if there is another port in the collection, else {@code false}
-         */
-        @Override
-        public boolean hasNext() {
-            return index < ports.length;
-        }
-
-
-        /**
-         * @return the next valid {@code port} in the collection if it exists, else null
-         */
-        @Override
-        public Port getNext() {
-            if(hasNext()) {
-                return ports[index++];
-            }
-            else{
-                System.err.println("End of port collection");
                 return null;
             }
         }

@@ -573,7 +573,7 @@ public class Catan extends JFrame {//Controller
      */
     private void addHexReshuffleButton(JPanel parent) {
         JButton button = new JButton("Reshuffle Both");
-        button.addActionListener(e -> hexReshuffle());
+        button.addActionListener(e -> reshuffleHexes());
         parent.add(button);
     }
 
@@ -584,7 +584,7 @@ public class Catan extends JFrame {//Controller
      */
     private void addUnflippedReshuffleButton(JPanel parent) {
         unflippedButton = new JButton("Reshuffle Unflipped");
-        unflippedButton.addActionListener(e -> unflippedReshuffle());
+        unflippedButton.addActionListener(e -> reshuffleUnflipped());
         parent.add(unflippedButton);
     }
 
@@ -671,7 +671,7 @@ public class Catan extends JFrame {//Controller
     /**
      * <p>Reshuffles each shuffleable hex's resource biome and number token.</p>
      */
-    public void hexReshuffle() {
+    public void reshuffleHexes() {
         board.initHexSpiral(true);
         board.shuffleHexes();
     }
@@ -701,7 +701,7 @@ public class Catan extends JFrame {//Controller
     /**
      * <p>Reshuffles each unflipped hex's resource biome and number token.</p>
      */
-    public void unflippedReshuffle(){
+    public void reshuffleUnflipped(){
         if(board instanceof IFlippable){
             ((IFlippable)board).shuffleUnflippedHexes();
         }
@@ -731,6 +731,8 @@ public class Catan extends JFrame {//Controller
         board.initHexSpiral(true);
         board.findValidPorts();
         board.shufflePorts();
+        bv.revalidate();
+        bv.repaint();
     }
 
 

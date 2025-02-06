@@ -84,7 +84,7 @@ public abstract class Board {
         boolean debug = getDebugFlag();
         //Initialize the middle row of hexes first
         for (int c = 0; c < hexGridDim.width; c++) {
-            hc.add(new Hex(medianRow, c, debug));
+            hc.addToGrid(new Hex(medianRow, c, debug));
         }
 
         /*
@@ -102,8 +102,8 @@ public abstract class Board {
                 endOffset++;
             }
             for (int c = startOffset; c < hexGridDim.width-endOffset; c++) {
-                hc.add(new Hex(medianRow - r, c, debug));
-                hc.add(new Hex(medianRow + r, c, debug));
+                hc.addToGrid(new Hex(medianRow - r, c, debug));
+                hc.addToGrid(new Hex(medianRow + r, c, debug));
             }
         }
     }
@@ -170,15 +170,15 @@ public abstract class Board {
         while(index < getShuffledHexCount()){
             while (hex != null && valid[hex.getGridRow()][hex.getGridColumn()]){
                 hex.setId(index);
-                hc.addToSpiral(hex, index);
+                hc.addToSpiral(hex);
                 valid[hex.getGridRow()][hex.getGridColumn()] = false;
                 prev = hex;
-                hex = hc.get(hex, direction);
+                hex = hc.getNeighbor(hex, direction);
                 index++;
             }
             hex = prev;
             direction = Math.floorMod(direction+orientation, Hex.SIDES);
-            hex = hc.get(hex, direction);
+            hex = hc.getNeighbor(hex, direction);
         }
     }
 
@@ -401,7 +401,7 @@ public abstract class Board {
             for(int dir = 0; dir < Hex.SIDES; dir++) {
                 int angle = Math.floorMod(startAngle+(dir*orientation), Hex.SIDES);
                 //System.out.println("$");
-                Hex nbrHex = hc.get(hex, angle);
+                Hex nbrHex = hc.getNeighbor(hex, angle);
                 if(nbrHex == null ||
                         (nbrHex.getBiome() == Tile.OCEAN && nbrHex.getType() != Tile.UNFLIPPED_TYPE)){
                     //System.out.println("^");
@@ -578,7 +578,7 @@ public abstract class Board {
      * <p>Sets all valid port's biomes to Ocean.</p>
      */
     public void clearPorts(){
-        IIterator<Port> i = pc.getValidPortIterator();
+        IIterator<Port> i = pc.getAllPortIterator();
         Port port;
         while(i.hasNext()){
             port = i.getNext();
@@ -600,7 +600,7 @@ public abstract class Board {
     public void placeFixedHex(int row, int col, int id, int biome)   {
         Hex hex = hc.get(row, col);
         hex.setId(id);
-        hc.addToSpiral(hex, id);
+        hc.addToSpiral(hex);
         if(getRandomFlag()){
             return;
         }
@@ -627,7 +627,7 @@ public abstract class Board {
     public void placeUnflippedHex(int row, int col, int id){
         Hex hex = hc.get(row, col);
         hex.setId(id);
-        hc.addToSpiral(hex, id);
+        hc.addToSpiral(hex);
         hex.setType(Tile.UNFLIPPED_TYPE);
     }
 
@@ -686,7 +686,7 @@ public abstract class Board {
      * @param unflippedResourceCounts The array representing the number of each resource
      *                                to be added to shuffled resource count array.
      */
-    public void combineResourceCount(int[] unflippedResourceCounts){
+    protected void combineResourceCount(int[] unflippedResourceCounts){
         for(int i = 0; i < resourceCounts.length; i++){
             resourceCounts[i] += unflippedResourceCounts[i];
         }
@@ -697,7 +697,7 @@ public abstract class Board {
      * <p>Concatenate the unflipped token collection to the end of the shuffled token collection.</p>
      * @param unflippedTokenCollection The unflipped token collection.
      */
-    public void combineTokenCollections(TokenCollection unflippedTokenCollection){
+    protected void combineTokenCollections(TokenCollection unflippedTokenCollection){
         tc.addAll(unflippedTokenCollection);
     }
 
@@ -889,7 +889,7 @@ public abstract class Board {
     }
     public String getTokenString(){
         StringBuilder sb = new StringBuilder();
-        IIterator<Integer> iterator = tc.getIterator();
+        IIterator<Integer> iterator = tc.getTokenIterator();
         while(iterator.hasNext()){
             sb.append(iterator.getNext());
             sb.append(",");
