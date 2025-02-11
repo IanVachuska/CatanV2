@@ -1,3 +1,5 @@
+package com.mycatan;
+
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 
@@ -31,7 +33,7 @@ public class Hex extends Tile {
         polygon = new Polygon(xPoints, yPoints, SIDES);
         setGridLocation(row, col);
         token = -1;
-        setType(Tile.SHUFFLED);
+        setType(SHUFFLED);
         setDebug(debug);
 
         tokenFont = new Font("Arial", Font.BOLD, 18);
@@ -64,7 +66,7 @@ public class Hex extends Tile {
         Graphics2D g2d = (Graphics2D) g;
         g2d.setStroke(getStroke());
         if(isDebug()) {
-            drawBoundingBox(g2d);
+            //drawBoundingBox(g2d);
         }
 
         AffineTransform transform = g2d.getTransform();
@@ -89,7 +91,7 @@ public class Hex extends Tile {
         FontMetrics fm = g2d.getFontMetrics();
         int textHeight = fm.getHeight()-4;
         int textWidth;
-        int centerOffset = 25;
+        int centerOffset = 28;
 
         //Rows/Columns (Grid)
         String s = getGridRow() + "," + getGridColumn();
@@ -136,7 +138,7 @@ public class Hex extends Tile {
         g2d.fill(polygon);
 
         g2d.setColor(Color.BLACK);
-        if(token > 0 && (getType() != Tile.UNFLIPPED_TYPE || isDebug())) {
+        if(token > 0 && (getType() != UNFLIPPED_TYPE || isDebug())) {
             drawToken(g2d);
         }
     }

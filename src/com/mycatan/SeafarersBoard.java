@@ -1,3 +1,4 @@
+package com.mycatan;
 
 public class SeafarersBoard extends Board{
 
@@ -15,10 +16,10 @@ public class SeafarersBoard extends Board{
     @Override
     public void initHexGridDim() {
         switch (getBoardSize()){
-            case Board.SMALL_BOARD:
+            case SMALL_BOARD:
                 super.setHexGridDim(7,7);
                 break;
-            case Board.LARGE_BOARD:
+            case LARGE_BOARD:
                 super.setHexGridDim(7,10);
                 break;
         }
@@ -32,10 +33,10 @@ public class SeafarersBoard extends Board{
     @Override
     public void initTileCounts() {
         switch (getBoardSize()){
-            case Board.SMALL_BOARD:
+            case SMALL_BOARD:
                 super.setTileCounts(14,23,0,8);
                 break;
-            case Board.LARGE_BOARD:
+            case LARGE_BOARD:
                 super.setTileCounts( 30,28,0,11);
                 break;
         }
@@ -88,8 +89,8 @@ public class SeafarersBoard extends Board{
             return super.getStartingHex(startPosition);
         }
         return switch (getBoardSize()) {
-            case Board.SMALL_BOARD -> getStartingHexSmall(startPosition);
-            case Board.LARGE_BOARD -> getStartingHexLarge(startPosition);
+            case SMALL_BOARD -> getStartingHexSmall(startPosition);
+            case LARGE_BOARD -> getStartingHexLarge(startPosition);
             default -> null;
         };
     }

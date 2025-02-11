@@ -1,3 +1,4 @@
+package com.mycatan;
 
 public class HexCollection {
     //STATIC FIELDS

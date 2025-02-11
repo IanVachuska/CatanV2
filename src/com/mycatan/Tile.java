@@ -1,3 +1,5 @@
+package com.mycatan;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
@@ -189,6 +191,8 @@ public abstract class Tile extends JButton implements IDrawable{
         }else{
             stroke = basicHexStroke;
         }
+        revalidate();
+        repaint();
     }
 
 

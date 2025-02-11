@@ -1,3 +1,5 @@
+package com.mycatan;
+
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 
@@ -60,7 +62,7 @@ public class Port extends Tile {
         Graphics2D g2d = (Graphics2D) g;
         g2d.setStroke(getStroke());
         if(isDebug()){
-            drawBoundingBox(g2d);
+            //drawBoundingBox(g2d);
         }
 
         AffineTransform transform = g2d.getTransform();
@@ -109,7 +111,7 @@ public class Port extends Tile {
     @Override
     public void draw(Graphics2D g2d) {
         int biome = getBiome();
-        if(biome == Tile.OCEAN && !isDebug()){
+        if(biome == OCEAN && !isDebug()){
             return;
         }
         int strokeOffset = (int)getStroke().getLineWidth();
@@ -120,8 +122,8 @@ public class Port extends Tile {
         g2d.drawLine(0,-y,0,y);
 
         Color portColor = getBiomeColor();
-        if(biome != Tile.OCEAN && !isFlipped() && !isDebug()){
-            portColor = Tile.getBiomeColor(Tile.DESERT);
+        if(biome != OCEAN && !isFlipped() && !isDebug()){
+            portColor = getBiomeColor(DESERT);
         }
         g2d.setColor(portColor);
         g2d.fillArc(-width/2,-height/2,width,height, 90, -180);

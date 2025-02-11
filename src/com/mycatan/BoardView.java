@@ -1,3 +1,5 @@
+package com.mycatan;
+
 import javax.swing.*;
 import java.awt.*;
 

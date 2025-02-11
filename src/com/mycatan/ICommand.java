@@ -1,3 +1,5 @@
+package com.mycatan;
+
 public interface ICommand
 {
     /**

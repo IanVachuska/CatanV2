@@ -1,3 +1,4 @@
+package com.mycatan;
 
 public class StandardBoard extends Board {
 
@@ -15,10 +16,10 @@ public class StandardBoard extends Board {
     @Override
     public void initHexGridDim() {
         switch (getBoardSize()){
-            case Board.SMALL_BOARD:
+            case SMALL_BOARD:
                 super.setHexGridDim(5,5);
                 break;
-            case Board.LARGE_BOARD:
+            case LARGE_BOARD:
                 super.setHexGridDim(7,6);
                 break;
         }
@@ -32,10 +33,10 @@ public class StandardBoard extends Board {
     @Override
     public void initTileCounts() {
         switch (getBoardSize()){
-            case Board.SMALL_BOARD:
+            case SMALL_BOARD:
                 super.setTileCounts(19,0,0,9);
                 break;
-            case Board.LARGE_BOARD:
+            case LARGE_BOARD:
                 super.setTileCounts( 30,0,0,11);
                 break;
         }

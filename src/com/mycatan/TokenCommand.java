@@ -1,3 +1,5 @@
+package com.mycatan;
+
 public class TokenCommand implements ICommand
 {
     /**

@@ -1,3 +1,4 @@
+package com.mycatan;
 import java.util.ArrayList;
 
 public class PortCollection {

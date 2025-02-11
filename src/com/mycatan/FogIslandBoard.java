@@ -1,3 +1,5 @@
+package com.mycatan;
+
 public class FogIslandBoard extends Board implements IFlippable {
 
     //CONSTRUCTORS
@@ -99,8 +101,8 @@ public class FogIslandBoard extends Board implements IFlippable {
             return super.getStartingHex(startPosition);
         }
         return switch (getBoardSize()) {
-            case Board.SMALL_BOARD -> getStartingHexSmall(startPosition);
-            case Board.LARGE_BOARD -> getStartingHexLarge(startPosition);
+            case SMALL_BOARD -> getStartingHexSmall(startPosition);
+            case LARGE_BOARD -> getStartingHexLarge(startPosition);
             default -> null;
         };
     }

@@ -1,3 +1,5 @@
+package com.mycatan;
+
 public class IdCommand implements ICommand{
     /**
      * <p>Calls {@code getId()} on {@code tile}.</p>

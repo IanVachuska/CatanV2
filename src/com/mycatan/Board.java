@@ -1,3 +1,4 @@
+package com.mycatan;
 import java.awt.*;
 import java.util.Random;
 
@@ -30,6 +31,8 @@ public abstract class Board {
     private int startPosition = 0;
     private int orientation = 1;
 
+    private Tile selectedTile;
+
     //CONSTRUCTORS
 
     public Board(int boardSize, int flags) {
@@ -43,6 +46,41 @@ public abstract class Board {
         initTokens();
 
         initBoard();
+    }
+
+    public void handleSelection(Tile tile){
+        if(tile == selectedTile){
+            //tiles are equal deselect tiles
+            selectedTile.setStrokeSelected(false);
+            selectedTile = null;
+        }
+        else if(tile.getClass() == selectedTile.getClass()){
+            //tiles are the same type and NOT equal
+            swapResource(selectedTile, tile);
+            //board.swapToken(tile, selectedTile)
+            selectedTile.setStrokeSelected(false);
+            selectedTile = null;
+        }
+        else{
+            //tiles are NOT the same type and NOT equal
+            selectedTile.setStrokeSelected(false);
+            tile.setStrokeSelected(true);
+            selectedTile = tile;
+        }
+    }
+
+    private void swapResource(Tile selectedTile, Tile tile) {
+        int tempBiome = tile.getBiome();
+        tile.setBiome(selectedTile.getBiome());
+        selectedTile.setBiome(tempBiome);
+    }
+
+    public Tile getSelectedTile(){
+        return selectedTile;
+    }
+    public void setSelectedTile(Tile tile){
+        selectedTile = tile;
+        selectedTile.setStrokeSelected(true);
     }
 
 
@@ -59,16 +97,32 @@ public abstract class Board {
 
         placeFixedTiles();
         placeUnflippedTiles();
-
         initHexSpiral(true);
         shuffleHexes();
 
         findAllPorts();
         findValidPorts();
         shufflePorts();
+
+        addListeners();
     }
-
-
+    private void addListeners(){
+        IIterator<Hex> h = hc.getGridIterator();
+        Hex hex;
+        while(h.hasNext()){
+            hex = h.getNext();
+            int type = hex.getType();
+            if(type == Hex.SHUFFLED || type == Hex.FIXED) {
+                hex.addActionListener(new TileListener(this));
+            }
+        }
+        IIterator<Port> p = pc.getAllPortIterator();
+        Port port;
+        while(p.hasNext()){
+            port = p.getNext();
+            port.addActionListener(new TileListener(this));
+        }
+    }
     /**
      *  <p>Initialize the {@code HexCollection} object and its aggregates.</p>
      *  <p>Note: Number of rows in grid must be set to an odd number
@@ -604,6 +658,7 @@ public abstract class Board {
         if(getRandomFlag()){
             return;
         }
+        hex.addActionListener(new TileListener(this));
         hex.setType(Tile.FIXED);
         hex.setBiome(biome);
         if(resourceCounts[biome] > 0){

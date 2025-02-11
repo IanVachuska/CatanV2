@@ -1,3 +1,5 @@
+package com.mycatan;
+
 import java.awt.*;
 
 public interface IDrawable {

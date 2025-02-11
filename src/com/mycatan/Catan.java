@@ -1,5 +1,8 @@
+package com.mycatan;
+
 import javax.swing.*;
 import java.awt.*;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
@@ -42,24 +45,23 @@ public class Catan extends JFrame {//Controller
         setLayout(new BorderLayout());
         initControlPanels();
         newBoard();
+
         setVisible(true);
         setPreferredSize(setMinimumScreenSize());
         this.addComponentListener(new ResizeListener(this));
     }
     public Catan(String boardTypeString, String boardSizeString, String boardModifiersString) {
-        System.out.println("CATAN");
         int boardType=parseBoardType(boardTypeString);
         int boardSize=parseBoardSize(boardSizeString);
         int boardModifiers=parseBoardModifiers(boardModifiersString);
 
+        System.out.println("CATAN");
         setLayout(new BorderLayout());
         initControlPanels();
         initGUIControls(boardType,boardSize,boardModifiers);
         newBoard(boardType,boardSize,boardModifiers);
-        initBoardView();
-        pack();
-        setVisible(true);
 
+        setVisible(true);
         setPreferredSize(setMinimumScreenSize());
         this.addComponentListener(new ResizeListener(this));
     }
@@ -75,15 +77,14 @@ public class Catan extends JFrame {//Controller
         if(st.hasMoreTokens()) {
             boardFlags = parseBoardModifiers(st.nextToken());
         }
+
         System.out.println("CATAN");
         setLayout(new BorderLayout());
         initControlPanels();
         initGUIControls(boardType,boardSize,boardFlags);
         newBoard(boardType,boardSize,boardFlags);
-        initBoardView();
-        pack();
-        setVisible(true);
 
+        setVisible(true);
         setPreferredSize(setMinimumScreenSize());
         this.addComponentListener(new ResizeListener(this));
     }
@@ -93,10 +94,8 @@ public class Catan extends JFrame {//Controller
         initControlPanels();
         initGUIControls(boardType,boardSize,boardFlags);
         newBoard(boardType,boardSize,boardFlags);
-        initBoardView();
-        pack();
-        setVisible(true);
 
+        setVisible(true);
         setPreferredSize(setMinimumScreenSize());
         this.addComponentListener(new ResizeListener(this));
     }
@@ -633,7 +632,9 @@ public class Catan extends JFrame {//Controller
             case FOGISLAND_BOARD:
                 board = new FogIslandBoard(boardSize, boardModifiers);
         }
-        printBoardData();
+        if(board.getDebugFlag()) {
+            printBoardData();
+        }
         initBoardView();
         resizeWindow();
         Dimension minimumSize = setMinimumScreenSize();
