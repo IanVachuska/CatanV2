@@ -2,6 +2,8 @@ package com.mycatan;
 
 public class FogIslandBoard extends Board implements IFlippable {
 
+    private TokenCollection tc;
+
     //CONSTRUCTORS
     public FogIslandBoard(int boardSize, int flags) {
         super(boardSize, flags);
@@ -49,9 +51,6 @@ public class FogIslandBoard extends Board implements IFlippable {
         }
 
         */
-
-
-
     }
 
 
@@ -182,29 +181,29 @@ public class FogIslandBoard extends Board implements IFlippable {
     @Override
     public void placeFixedTilesLarge(){
         int id = getShuffledHexCount();
-        placeFixedHex(1,1, id++, Tile.OCEAN);
-        placeFixedHex(1,9, id++, Tile.OCEAN);
+        placeFixedHex(1,1, id++, ResourceTile.OCEAN);
+        placeFixedHex(1,9, id++, ResourceTile.OCEAN);
 
-        placeFixedHex(2,1, id++, Tile.OCEAN);
-        placeFixedHex(2,8, id++, Tile.OCEAN);
+        placeFixedHex(2,1, id++, ResourceTile.OCEAN);
+        placeFixedHex(2,8, id++, ResourceTile.OCEAN);
 
-        placeFixedHex(3,0, id++, Tile.OCEAN);
-        placeFixedHex(3,2, id++, Tile.OCEAN);
-        placeFixedHex(3,3, id++, Tile.OCEAN);
-        placeFixedHex(3,4, id++, Tile.WOOD);
-        placeFixedHex(3,5, id++, Tile.OCEAN);
-        placeFixedHex(3,6, id++, Tile.SHEEP);
-        placeFixedHex(3,7, id++, Tile.OCEAN);
-        placeFixedHex(3,8, id++, Tile.OCEAN);
-        placeFixedHex(3,10,id++, Tile.OCEAN);
+        placeFixedHex(3,0, id++, ResourceTile.OCEAN);
+        placeFixedHex(3,2, id++, ResourceTile.OCEAN);
+        placeFixedHex(3,3, id++, ResourceTile.OCEAN);
+        placeFixedHex(3,4, id++, ResourceTile.WOOD);
+        placeFixedHex(3,5, id++, ResourceTile.OCEAN);
+        placeFixedHex(3,6, id++, ResourceTile.SHEEP);
+        placeFixedHex(3,7, id++, ResourceTile.OCEAN);
+        placeFixedHex(3,8, id++, ResourceTile.OCEAN);
+        placeFixedHex(3,10,id++, ResourceTile.OCEAN);
 
-        placeFixedHex(4,3, id++, Tile.OCEAN);
-        placeFixedHex(4,4, id++, Tile.OCEAN);
-        placeFixedHex(4,5, id++, Tile.OCEAN);
-        placeFixedHex(4,6, id++, Tile.OCEAN);
+        placeFixedHex(4,3, id++, ResourceTile.OCEAN);
+        placeFixedHex(4,4, id++, ResourceTile.OCEAN);
+        placeFixedHex(4,5, id++, ResourceTile.OCEAN);
+        placeFixedHex(4,6, id++, ResourceTile.OCEAN);
 
-        placeFixedHex(6,1, id++, Tile.GOLD);
-        placeFixedHex(6,8, id++, Tile.GOLD);
+        placeFixedHex(6,1, id++, ResourceTile.GOLD);
+        placeFixedHex(6,8, id++, ResourceTile.GOLD);
     }
 
 
@@ -300,7 +299,8 @@ public class FogIslandBoard extends Board implements IFlippable {
         private static final int[] tokensSmall =
                 {0,0,0,0,0,0,0, 0,0,0,0,0,0,0};
         private static final int[] tokensLarge =
-                {3,11,4,10,5,6,8,11,6,4,3,10,12,3,9,8,2,4,6,10,9,12,5,11,8};
+                {3,11,4,10
+                        ,5,6,8,11,6,4,3,10,12,3,9,8,2,4,6,10,9,12,5,11,8};
         public static int[] getTokens(int boardSize) {
             if(boardSize == SMALL_BOARD){
                 return tokensLarge.clone();

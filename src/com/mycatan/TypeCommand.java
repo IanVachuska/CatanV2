@@ -11,7 +11,10 @@ public class TypeCommand implements ICommand
     @Override
     public int get(Tile tile)
     {
-        return tile.getTypeChar();
+        if(tile instanceof Hex) {
+            return ((Hex)tile).getTypeChar();
+        }
+        return 'ø';
     }
 
 
@@ -23,6 +26,8 @@ public class TypeCommand implements ICommand
     @Override
     public void set(Tile tile , int data)
     {
-        tile.setType(data);
+        if(tile instanceof Hex) {
+            ((Hex)tile).setType(data);
+        }
     }
 }

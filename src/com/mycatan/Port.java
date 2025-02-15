@@ -1,11 +1,22 @@
 package com.mycatan;
 
+import javax.xml.crypto.dsig.Transform;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Arc2D;
 
-public class Port extends Tile {
+public class Port extends ResourceTile {
     //STATIC FIELDS
     public static final int LENGTH = 36;
+
+    //Port Strokes
+    private static final BasicStroke basicStroke =
+            new BasicStroke(6f,BasicStroke.CAP_BUTT,
+                    BasicStroke.JOIN_ROUND,10f);
+    private static final BasicStroke selectStroke
+            = new BasicStroke(6f,BasicStroke.CAP_BUTT,
+            BasicStroke.JOIN_ROUND,10f, new float[]{8f},4f);
+
 
     //FIELDS
     private final Hex hex;
@@ -14,6 +25,7 @@ public class Port extends Tile {
     private double angle;
     private double angleOffset;
 
+    private final Arc2D.Double arc;
     //local coordinates
     private int width;
     private int height;
@@ -26,24 +38,25 @@ public class Port extends Tile {
         super();
         setOpaque(false);
         this.hex = hex;
-        setBiome(OCEAN);
+        setBiome(ResourceTile.OCEAN);
         int angle = dir+4;
         setAngle((angle*60)%360);
         initPoints();
-        setGridLocation(hex.getGridRow(), hex.getGridColumn());//Not Location
+        arc = new Arc2D.Double((double) -width / 2, (double) -height / 2,
+                width, height, 90, -180, Arc2D.PIE);
     }
 
     /**
      * <p>Set up the points necessary to draw the {@code Port}</p>
      */
-    @Override
+    //@Override
     protected void initPoints(){
         width = LENGTH;
         height = LENGTH;
 
         Rectangle bounds = new Rectangle();
-        bounds.width = getTileWidth();
-        bounds.height = getTileHeight();
+        bounds.width = getPreScaleWidth();
+        bounds.height = getPreScaleHeight();
         bounds.x = -bounds.width/2;
         bounds.y = -bounds.height/2;
 
@@ -53,53 +66,33 @@ public class Port extends Tile {
         setBounds(bounds);
     }
 
-    /**
-     * <p>Paints the port. Do not call this function directly.</p>
-     * @param g the {@code Graphics} object
-     */
-    @Override
-    protected void paintComponent(Graphics g) {
-        Graphics2D g2d = (Graphics2D) g;
-        g2d.setStroke(getStroke());
-        if(isDebug()){
-            //drawBoundingBox(g2d);
-        }
-
-        AffineTransform transform = g2d.getTransform();
-        transform.concatenate(getScale());
-        transform.translate((float) getTileWidth()/2, (float) getTileHeight()/2);
+    public AffineTransform initTransform(Graphics2D g2d){
+        AffineTransform transform = super.initTransform(g2d);
         transform.rotate(angle, 0,0);
-        g2d.setTransform(transform);
-
-
-        draw(g2d);
-        if(isDebug()) {
-            displayDebugInfo(g2d);
-        }
-
-
+        return transform;
     }
 
     /**
      * <p>Displays extra information on the port to debug errors and aid in development.</p>
      * @param g2d the {@code Graphics2D} object
      */
-    @Override
+    //@Override
     protected void displayDebugInfo(Graphics2D g2d) {
         g2d.setColor(Color.BLACK);
         g2d.setFont(getDebugFont());
-
+        int textHeight = g2d.getFontMetrics().getHeight() - 1;
         String s = Integer.toString(getId());
         //String s = Integer.toString(getAngle());
         int textWidth = g2d.getFontMetrics().stringWidth(s);
 
+
         AffineTransform transform = g2d.getTransform();
-        transform.translate(12,-6);
-        transform.rotate(-angle, -4,6);
-        transform.rotate(Math.toRadians(angleOffset), -4,6);
+        transform.translate((float)textHeight,(float)-textHeight/2);
+        transform.rotate(-angle, (float)-textHeight/3,(float)textHeight/2);
+        transform.rotate(Math.toRadians(angleOffset), (float)-textHeight/3,(float)textHeight/2);
         g2d.setTransform(transform);
 
-        g2d.drawString(s, (getTileWidth()-textWidth-60)/2, (getTileHeight()-30)/2);
+        g2d.drawString(s, (getPreScaleWidth()-textWidth-60)/2, (getPreScaleHeight()-30)/2);
     }
 
     /**
@@ -111,30 +104,30 @@ public class Port extends Tile {
     @Override
     public void draw(Graphics2D g2d) {
         int biome = getBiome();
-        if(biome == OCEAN && !isDebug()){
+        if(biome == ResourceTile.OCEAN && !isDebug()){
             return;
         }
-        int strokeOffset = (int)getStroke().getLineWidth();
-        int y = (height+strokeOffset)/2;
-
         g2d.setColor(Color.BLACK);
-        g2d.drawArc(-width/2,-height/2,width,height, 90, -180);
-        g2d.drawLine(0,-y,0,y);
+        g2d.draw(arc);
 
         Color portColor = getBiomeColor();
-        if(biome != OCEAN && !isFlipped() && !isDebug()){
-            portColor = getBiomeColor(DESERT);
+        if(biome != ResourceTile.OCEAN && !isFlipped() && !isDebug()){
+            portColor = getBiomeColor(ResourceTile.DESERT);
         }
         g2d.setColor(portColor);
-        g2d.fillArc(-width/2,-height/2,width,height, 90, -180);
+        g2d.fill(arc);
+
+        if(isDebug()){
+            displayDebugInfo(g2d);
+        }
     }
 
     /**
      * <p>Sets the horizontal and vertical offsets based on the current angle</p>
      */
     private void initOffset(){
-        offsetX = (int)(Math.round((float)hex.getTileWidth()/2) * Math.cos(angle));
-        offsetY = (int)(Math.round((float)hex.getTileHeight()/2) * Math.sin(angle));
+        offsetX = (int)(Math.round((float)hex.getPreScaleWidth()/2) * Math.cos(angle));
+        offsetY = (int)(Math.round((float)hex.getPreScaleHeight()/2) * Math.sin(angle));
         int xo = 2;
         int yo = 4;
         int ao = 30;
@@ -185,7 +178,7 @@ public class Port extends Tile {
      * Sets the {@code flipped} field to the argument value
      * @param flipped the new flipped status of the port
      */
-    public void setFlipped(boolean flipped){
+    public void flip(boolean flipped){
         this.flipped = flipped;
     }
 
@@ -195,7 +188,7 @@ public class Port extends Tile {
      * @return the {@code angle} field converted to degrees
      */
     public int getAngle(){
-        return (int)Math.round(Math.toDegrees(angle));
+        return (int)Math.round(Math.toDegrees(angle))%360;
     }
 
     /**
@@ -216,7 +209,7 @@ public class Port extends Tile {
      * @return the original width of the port before any resizing
      */
     @Override
-    public int getTileWidth(){
+    public int getPreScaleWidth(){
         return width + 2 * (int)getStroke().getLineWidth();
     }
 
@@ -224,8 +217,28 @@ public class Port extends Tile {
      * @return the original height of the port before any resizing
      */
     @Override
-    public int getTileHeight(){
+    public int getPreScaleHeight(){
         return height + 2 * (int)getStroke().getLineWidth();
+    }
+
+    @Override
+    int getGridRow() {
+        return hex.getGridRow();
+    }
+
+    @Override
+    int getGridColumn() {
+        return hex.getGridColumn();
+    }
+
+    @Override
+    int getWorldX() {
+        return hex.getWorldX() + (hex.getPreScaleWidth() - getPreScaleWidth())/2 + getXOffset();
+    }
+
+    @Override
+    int getWorldY() {
+        return hex.getWorldY() + (hex.getPreScaleHeight() - getPreScaleHeight())/2 + getYOffset();
     }
 
     /**
@@ -240,5 +253,43 @@ public class Port extends Tile {
      */
     public int getYOffset() {
         return offsetY;
+    }
+
+    @Override
+    public void select(){
+        setStroke(selectStroke);
+        revalidate();
+        repaint();
+    }
+
+    @Override
+    public void deselect() {
+        setStroke(basicStroke);
+        revalidate();
+        repaint();
+    }
+
+    public boolean contains(int ptrX, int ptrY){
+        if(!super.contains(ptrX,ptrY)){
+            return false;
+        }
+        int radius = getWidth()/2;
+        int distance = (int)Math.round(Math.sqrt(Math.pow(ptrX-radius,2) + Math.pow(ptrY-radius,2)));
+        boolean inCircle = distance <= radius - 6;
+        if(!inCircle){
+            return false;
+        }
+        //System.out.println("ptrX: "+ptrX+" ptrY: "+ptrY);
+        //System.out.println("radius: "+radius +" distance: "+distance);
+
+        int w2 = radius + (int)getStroke().getLineWidth() - ptrX;
+        int dy = (int) Math.round(w2 * Math.sin(Math.toRadians(angle)));
+        return switch (getAngle()) {
+            case 0 -> ptrX >= radius;
+            case 60, 120 -> ptrY >= radius + dy;
+            case 180 -> ptrX <= radius;
+            case 240, 300 -> ptrY <= radius + dy;
+            default -> false;
+        };
     }
 }

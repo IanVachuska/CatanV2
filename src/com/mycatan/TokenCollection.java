@@ -6,18 +6,21 @@ import java.util.Random;
 
 public class TokenCollection {
     //FIELDS
-    private ArrayList<Integer> tokens;
-    private final IIterator<Integer> iterator;
+    private ArrayList<Token> tokens;
+    private final IIterator<Token> iterator;
 
     //CONSTRUCTORS
     public TokenCollection(int[] tokens) {
-        this.tokens = new ArrayList<Integer>();
+        this.tokens = new ArrayList<Token>();
         for (int token : tokens) {
-            this.tokens.add(token);
+            this.tokens.add(new Token(token));
         }
         iterator = this.getTokenIterator();
     }
 
+    public void add(Token token) {
+        this.tokens.add(token);
+    }
 
     /**
      * <p>Concatenate the two {@code TokenCollection} objects into one.</p>
@@ -33,44 +36,44 @@ public class TokenCollection {
      */
     public void shuffle(){
         int tokenCount = 0;
-        for (Integer token : tokens) {
-            tokenCount += token;
+        for (Token token : tokens) {
+            tokenCount += token.valueOf();
         }
-        ArrayList<Integer> shuffledlist = new ArrayList<Integer>(tokenCount);
+        ArrayList<Token> shuffledList = new ArrayList<Token>(tokenCount);
         Random rand = new Random();
         int startOffset = 0, endOffset = 0;
         int randomCycle = 0;//incremented every loop iteration
-        while(shuffledlist.size() < tokenCount) {
+        while(shuffledList.size() < tokenCount) {
             //if the last resource in the resourceCounts array is 0, then trim tail
-            if (tokens.get((tokens.size() - 1) - endOffset) == 0) {
+            if (tokens.get((tokens.size() - 1) - endOffset).valueOf() == 0) {
                 endOffset++;
             }
             //if the first resource in the resourceCounts array is 0, then trim head
-            if (tokens.get(startOffset) == 0) {
+            if (tokens.get(startOffset).valueOf() == 0) {
                 startOffset++;
             }
             if (tokens.size() - endOffset - startOffset <= 0) {
                 break;
             }
-            int randomToken = startOffset + rand.nextInt(tokens.size()
+            //pick a random number between [0,9]
+            int randomTokenIndex = startOffset + rand.nextInt(tokens.size()
                     - endOffset - startOffset);
-            if(tokens.get(randomToken) > 0){
-                int val = tokens.get(randomToken);
-                tokens.set(randomToken, val-1);
+            //check countArray
+            if(tokens.get(randomTokenIndex).valueOf() > 0){
+                Token token = tokens.get(randomTokenIndex);
+                //get current value
+                int val = token.valueOf();
+                //decrement count
+                token.set(val-1);
                 //randomToken changed now
-                randomToken = randomToken + 2;
-                if(randomToken > 6){
-                    randomToken++;
-                }
-                shuffledlist.add(randomToken);
+                shuffledList.add(new Token(randomTokenIndex + (randomTokenIndex>6?1:0) + 2));
             }
             randomCycle++;
         }
-        Collections.shuffle(shuffledlist);
-        tokens = shuffledlist;
+        Collections.shuffle(shuffledList);
+        tokens = shuffledList;
         System.out.println("Random Report\nt:" + randomCycle + "/" + tokenCount);
     }
-
 
     /**
      * <p>Randomizes the ordering of the {@code tokens}</p>
@@ -102,13 +105,13 @@ public class TokenCollection {
      * <p>Iterate the built in token iterator</p>
      * @return the next number token in the list
      */
-    public Integer getNext(){
+    public Token getNext(){
         if(iterator.hasNext()) {
             return iterator.getNext();
         }
         else {
             System.err.println("No more tokens in collection: ");
-            return -1;
+            return null;
         }
     }
 
@@ -118,7 +121,7 @@ public class TokenCollection {
     /**
      * @return a new {@code IIterator} object for the {@code TokenCollection}
      */
-    public IIterator<Integer> getTokenIterator(){
+    public IIterator<Token> getTokenIterator(){
         return new TokenIterator();
     }
 
@@ -128,7 +131,7 @@ public class TokenCollection {
     /**
      * <p>{@code IIterator} class for the {@code tokens} collection.</p>
      */
-    private class TokenIterator implements IIterator<Integer>{
+    private class TokenIterator implements IIterator<Token>{
         //FIELDS
         private int index;
         private int head;
@@ -153,8 +156,8 @@ public class TokenCollection {
          * @return the next {@code token} in the collection if it exists, else -1
          */
         @Override
-        public Integer getNext() {
-            int token = -1;
+        public Token getNext() {
+            Token token = null;
             if(hasNext()){
                 token = tokens.get(index);
                 index++;

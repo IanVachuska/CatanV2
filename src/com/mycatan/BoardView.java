@@ -2,21 +2,24 @@ package com.mycatan;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
 
 public class BoardView extends JLayeredPane {
     private final Dimension ws;
     private final Dimension origin;
     private final Board board;
+    private ArrayList<Tile> tiles;
 
     public BoardView(Board board) {
         super();
         this.board = board;
         this.ws = new Dimension();
         this.origin = new Dimension(30,15);
+        ArrayList<Tile> tiles = new ArrayList<Tile>(board.getTotalHexCount()*3/2 + board.getPortCount());
 
         this.setBorder(BorderFactory.createLineBorder(Color.MAGENTA));
         //this.setBackground(Color.BLACK);
-        this.setBackground(Tile.getBiomeColor(Tile.OCEAN));
+        this.setBackground(ResourceTile.getBiomeColor(ResourceTile.OCEAN));
         this.setOpaque(true);
     }
 
@@ -32,7 +35,6 @@ public class BoardView extends JLayeredPane {
         this.setVisible(true);
     }
 
-
     /**
      * <p>Iterates over each {@code Hex} in the {@code HexCollection}
      * and adds it to the {@code ContentPane}.</p>
@@ -43,10 +45,10 @@ public class BoardView extends JLayeredPane {
         IIterator<Hex> i = board.getHexCollection().getGridIterator();
 
         Hex hex = i.getNext();
-        int height = hex.getTileHeight() - (hex.getTileHeight() - Hex.LENGTH)/2;
-        int width = hex.getTileWidth();
+        int height = hex.getPreScaleHeight() - (hex.getPreScaleHeight() - Hex.LENGTH)/2;
+        int width = hex.getPreScaleWidth();
         //SET WORLDSIZE
-        ws.height = height * board.getHexGridDim().height + hex.getTileHeight()/2 + 2*origin.height + 4;
+        ws.height = height * board.getHexGridDim().height + hex.getPreScaleHeight()/2 + 2*origin.height + 4;
         ws.width = width * board.getHexGridDim().width + 2*origin.width;
         i.reset();
         while(i.hasNext()){
@@ -57,11 +59,14 @@ public class BoardView extends JLayeredPane {
             int y = hex.getGridRow()*height;
 
             hex.setWorldLocation(x  + origin.width,y  + origin.height);
-            hex.setBounds(hex.getWorldX(), hex.getWorldY(), width, height);
-            add(hex);
+            add(hex, JLayeredPane.DEFAULT_LAYER);
+
+            Token token = hex.getToken();
+            if(token != null){
+                add(hex.getToken(), JLayeredPane.POPUP_LAYER);
+            }
         }
     }
-
 
     /**
      * <p>Iterates over each {@code Port} in the {@code PortCollection}
@@ -74,18 +79,6 @@ public class BoardView extends JLayeredPane {
         Port port;
         while(i.hasNext()){
             port = i.getNext();
-            Hex hex = hc.get(port);
-            Point hexPoint = hex.getLocation();
-
-            hexPoint.x += hex.getTileWidth()/2 - port.getTileWidth()/2 + port.getXOffset();
-            hexPoint.y += hex.getTileHeight()/2 - port.getTileHeight()/2 + port.getYOffset();
-
-            Rectangle bounds = port.getBounds();
-            bounds.translate(hexPoint.x, hexPoint.y);
-
-            port.setWorldLocation(hexPoint.x,hexPoint.y);
-            port.setBounds(bounds);
-
             add(port, JLayeredPane.POPUP_LAYER);
         }
     }
@@ -103,7 +96,6 @@ public class BoardView extends JLayeredPane {
             this.remove(port);
         }
     }
-
 
     /**
      * @return the {@code Dimension} object representing the world size
@@ -131,7 +123,12 @@ public class BoardView extends JLayeredPane {
     private void resizeHexes(double size){
         IIterator<Hex> i = board.getHexCollection().getGridIterator();
         while(i.hasNext()) {
-           resizeTile(i.getNext(), size);
+            Hex hex = i.getNext();
+            resizeTile(hex, size);
+            Token token = hex.getToken();
+            if(token != null) {
+                resizeTile(token, size);
+            }
         }
     }
 
@@ -157,9 +154,9 @@ public class BoardView extends JLayeredPane {
         tile.setScale(size);
         int x = (int)(size*tile.getWorldX());
         int y = (int)(size*tile.getWorldY());
-        int width = (int)(size*tile.getTileWidth());
-        int height = (int)(size*tile.getTileHeight());
+        int width = (int)Math.round(size*tile.getPreScaleWidth());
+        int height = (int)Math.round(size*tile.getPreScaleHeight());
         tile.setBounds(x,y,width,height);
-        tile.setLocation(x,y);
+        //tile.setLocation(x,y);
     }
 }

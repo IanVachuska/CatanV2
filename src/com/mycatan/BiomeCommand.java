@@ -11,7 +11,10 @@ public class BiomeCommand implements ICommand
     @Override
     public int get(Tile tile)
     {
-        return tile.getBiomeChar();
+        if(tile instanceof ResourceTile resourceTile) {
+            return resourceTile.getBiomeChar();
+        }
+        return 'ø';
     }
 
 
@@ -23,6 +26,8 @@ public class BiomeCommand implements ICommand
     @Override
     public void set(Tile tile, int data)
     {
-        tile.setBiome(data);
+        if(tile instanceof ResourceTile resourceTile) {
+            resourceTile.setBiome(data);
+        }
     }
 }

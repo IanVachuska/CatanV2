@@ -155,41 +155,41 @@ public class SeafarersBoard extends Board{
     @Override
     public void placeFixedTilesSmall(){
         int r = 0, c = 1, id = getShuffledHexCount();
-        placeFixedHex(r, c++, id++, Tile.OCEAN);
-        placeFixedHex(r, c++, id++, Tile.OCEAN);
-        placeFixedHex(r, c++, id++, Tile.OCEAN);
-        placeFixedHex(r, c  , id++, Tile.BRICK);
+        placeFixedHex(r, c++, id++, ResourceTile.OCEAN);
+        placeFixedHex(r, c++, id++, ResourceTile.OCEAN);
+        placeFixedHex(r, c++, id++, ResourceTile.OCEAN);
+        placeFixedHex(r, c  , id++, ResourceTile.BRICK);
 
         r = 1; c = 4;
-        placeFixedHex(r, c++, id++, Tile.OCEAN);
-        placeFixedHex(r, c  , id++, Tile.GOLD);
+        placeFixedHex(r, c++, id++, ResourceTile.OCEAN);
+        placeFixedHex(r, c  , id++, ResourceTile.GOLD);
 
         r = 2; c = 4;
-        placeFixedHex(r, c++, id++, Tile.OCEAN);
-        placeFixedHex(r, c  , id++, Tile.OCEAN);
+        placeFixedHex(r, c++, id++, ResourceTile.OCEAN);
+        placeFixedHex(r, c  , id++, ResourceTile.OCEAN);
 
         r = 3; c = 4;
-        placeFixedHex(r, c++, id++, Tile.OCEAN);
-        placeFixedHex(r, c++, id++, Tile.SHEEP);
-        placeFixedHex(r, c  , id++, Tile.OCEAN);
+        placeFixedHex(r, c++, id++, ResourceTile.OCEAN);
+        placeFixedHex(r, c++, id++, ResourceTile.SHEEP);
+        placeFixedHex(r, c  , id++, ResourceTile.OCEAN);
 
         r = 4; c = 3;
-        placeFixedHex(r, c++, id++, Tile.OCEAN);
-        placeFixedHex(r, c++, id++, Tile.HAY);
-        placeFixedHex(r, c  , id++, Tile.ROCK);
+        placeFixedHex(r, c++, id++, ResourceTile.OCEAN);
+        placeFixedHex(r, c++, id++, ResourceTile.HAY);
+        placeFixedHex(r, c  , id++, ResourceTile.ROCK);
 
         r = 5; c = 1;
-        placeFixedHex(r, c++, id++, Tile.OCEAN);
-        placeFixedHex(r, c++, id++, Tile.OCEAN);
-        placeFixedHex(r, c++, id++, Tile.OCEAN);
-        placeFixedHex(r, c++, id++, Tile.GOLD);
-        placeFixedHex(r, c  , id++, Tile.OCEAN);
+        placeFixedHex(r, c++, id++, ResourceTile.OCEAN);
+        placeFixedHex(r, c++, id++, ResourceTile.OCEAN);
+        placeFixedHex(r, c++, id++, ResourceTile.OCEAN);
+        placeFixedHex(r, c++, id++, ResourceTile.GOLD);
+        placeFixedHex(r, c  , id++, ResourceTile.OCEAN);
 
         r = 6; c = 1;
-        placeFixedHex(r, c++, id++, Tile.ROCK);
-        placeFixedHex(r, c++, id++, Tile.BRICK);
-        placeFixedHex(r, c++, id++, Tile.OCEAN);
-        placeFixedHex(r, c  , id++, Tile.OCEAN);
+        placeFixedHex(r, c++, id++, ResourceTile.ROCK);
+        placeFixedHex(r, c++, id++, ResourceTile.BRICK);
+        placeFixedHex(r, c++, id++, ResourceTile.OCEAN);
+        placeFixedHex(r, c  , id++, ResourceTile.OCEAN);
     }
 
 
@@ -200,53 +200,53 @@ public class SeafarersBoard extends Board{
     @Override
     public void placeFixedTilesLarge(){
         int r = 0, c = 1, id = getShuffledHexCount();
-        placeFixedHex(r, c++, id++, Tile.GOLD);
-        placeFixedHex(r, c  , id++, Tile.OCEAN);
+        placeFixedHex(r, c++, id++, ResourceTile.GOLD);
+        placeFixedHex(r, c  , id++, ResourceTile.OCEAN);
         c = 6;
-        placeFixedHex(r, c++, id++, Tile.OCEAN);
-        placeFixedHex(r, c  , id++, Tile.ROCK);
+        placeFixedHex(r, c++, id++, ResourceTile.OCEAN);
+        placeFixedHex(r, c  , id++, ResourceTile.ROCK);
 
         r = 1; c = 1;
-        placeFixedHex(r, c++, id++, Tile.ROCK);
-        placeFixedHex(r, c  , id++, Tile.OCEAN);
+        placeFixedHex(r, c++, id++, ResourceTile.ROCK);
+        placeFixedHex(r, c  , id++, ResourceTile.OCEAN);
         c = 7;
-        placeFixedHex(r, c++, id++, Tile.OCEAN);
-        placeFixedHex(r, c  , id++, Tile.OCEAN);
+        placeFixedHex(r, c++, id++, ResourceTile.OCEAN);
+        placeFixedHex(r, c  , id++, ResourceTile.OCEAN);
 
         r = 2; c = 0;
-        placeFixedHex(r, c++, id++, Tile.SHEEP);
-        placeFixedHex(r, c  , id++, Tile.OCEAN);
+        placeFixedHex(r, c++, id++, ResourceTile.SHEEP);
+        placeFixedHex(r, c  , id++, ResourceTile.OCEAN);
         c = 7;
-        placeFixedHex(r, c++, id++, Tile.OCEAN);
-        placeFixedHex(r, c  , id++, Tile.BRICK);
+        placeFixedHex(r, c++, id++, ResourceTile.OCEAN);
+        placeFixedHex(r, c  , id++, ResourceTile.BRICK);
 
         r = 3; c = 0;
-        placeFixedHex(r, c++, id++, Tile.OCEAN);
-        placeFixedHex(r, c  , id++, Tile.OCEAN);
+        placeFixedHex(r, c++, id++, ResourceTile.OCEAN);
+        placeFixedHex(r, c  , id++, ResourceTile.OCEAN);
         c = 8;
-        placeFixedHex(r, c++, id++, Tile.OCEAN);
-        placeFixedHex(r, c  , id++, Tile.OCEAN);
+        placeFixedHex(r, c++, id++, ResourceTile.OCEAN);
+        placeFixedHex(r, c  , id++, ResourceTile.OCEAN);
 
         r = 4; c = 0;
-        placeFixedHex(r, c++, id++, Tile.BRICK);
-        placeFixedHex(r, c  , id++, Tile.OCEAN);
+        placeFixedHex(r, c++, id++, ResourceTile.BRICK);
+        placeFixedHex(r, c  , id++, ResourceTile.OCEAN);
         c = 7;
-        placeFixedHex(r, c++, id++, Tile.OCEAN);
-        placeFixedHex(r, c  , id++, Tile.HAY);
+        placeFixedHex(r, c++, id++, ResourceTile.OCEAN);
+        placeFixedHex(r, c  , id++, ResourceTile.HAY);
 
         r = 5; c = 1;
-        placeFixedHex(r, c++, id++, Tile.WOOD);
-        placeFixedHex(r, c  , id++, Tile.OCEAN);
+        placeFixedHex(r, c++, id++, ResourceTile.WOOD);
+        placeFixedHex(r, c  , id++, ResourceTile.OCEAN);
         c = 7;
-        placeFixedHex(r, c++, id++, Tile.OCEAN);
-        placeFixedHex(r, c  , id++, Tile.OCEAN);
+        placeFixedHex(r, c++, id++, ResourceTile.OCEAN);
+        placeFixedHex(r, c  , id++, ResourceTile.OCEAN);
 
         r = 6; c = 1;
-        placeFixedHex(r, c++, id++, Tile.GOLD);
-        placeFixedHex(r, c  , id++, Tile.OCEAN);
+        placeFixedHex(r, c++, id++, ResourceTile.GOLD);
+        placeFixedHex(r, c  , id++, ResourceTile.OCEAN);
         c = 6;
-        placeFixedHex(r, c++, id++, Tile.OCEAN);
-        placeFixedHex(r, c  , id++, Tile.GOLD);
+        placeFixedHex(r, c++, id++, ResourceTile.OCEAN);
+        placeFixedHex(r, c  , id++, ResourceTile.GOLD);
     }
 
 

@@ -6,12 +6,12 @@ import java.awt.event.ActionListener;
 record TileListener(Board board) implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
-        Tile tile = (Tile) e.getSource();
+        ISelectable selectedTile = (ISelectable) e.getSource();
         if(board.getSelectedTile() == null){
-            board.setSelectedTile(tile);
+            board.select(selectedTile);
         }
         else{
-            board.handleSelection(tile);
+            board.handleSelection(selectedTile);
         }
 
     }

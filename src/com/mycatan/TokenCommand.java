@@ -4,14 +4,17 @@ public class TokenCommand implements ICommand
 {
     /**
      * <p>Calls {@code getToken()} on {@code hex}.</p>
-     * @param hex the object that data gets extracted from
+     * @param tile the object that data gets extracted from
      * @return the {@code token} value
      */
     @Override
-    public int get(Tile hex)
+    public int get(Tile tile)
     {
-        if(hex instanceof Hex){
-            return ((Hex)hex).getToken();
+        if(tile instanceof Hex hex){
+            Token token = hex.getToken();
+            if(token != null) {
+                return hex.getToken().valueOf();
+            }
         }
         return 0;
     }
@@ -19,14 +22,14 @@ public class TokenCommand implements ICommand
 
     /**
      * <p>Calls {@code setToken()} on {@code hex}.</p>
-     * @param hex the object that gets modified
+     * @param tile the object that gets modified
      * @param data the new {@code token} value
      */
     @Override
-    public void set(Tile hex , int data)
+    public void set(Tile tile , int data)
     {
-        if(hex instanceof Hex){
-            ((Hex)hex).setToken(data);
+        if(tile instanceof Hex hex){
+            //hex.setTokenValue(data);
         }
     }
 }

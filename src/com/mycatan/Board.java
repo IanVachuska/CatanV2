@@ -31,7 +31,7 @@ public abstract class Board {
     private int startPosition = 0;
     private int orientation = 1;
 
-    private Tile selectedTile;
+    private ISelectable selectedTile;
 
     //CONSTRUCTORS
 
@@ -48,39 +48,49 @@ public abstract class Board {
         initBoard();
     }
 
-    public void handleSelection(Tile tile){
+    public void handleSelection(ISelectable tile){
         if(tile == selectedTile){
             //tiles are equal deselect tiles
-            selectedTile.setStrokeSelected(false);
-            selectedTile = null;
+            if(tile instanceof Hex hex) {
+                int biome = hex.getBiome();
+                if(biome == ResourceTile.DESERT){
+                    hex.setBiome(ResourceTile.OCEAN);
+                }
+                else if (biome == ResourceTile.OCEAN){
+                    hex.setBiome(ResourceTile.DESERT);
+                }
+            }
+            deselect();
         }
         else if(tile.getClass() == selectedTile.getClass()){
             //tiles are the same type and NOT equal
-            swapResource(selectedTile, tile);
-            //board.swapToken(tile, selectedTile)
-            selectedTile.setStrokeSelected(false);
-            selectedTile = null;
+            selectedTile.swap(tile);
+            shuffleHexes(null);
+            deselect();
         }
         else{
             //tiles are NOT the same type and NOT equal
-            selectedTile.setStrokeSelected(false);
-            tile.setStrokeSelected(true);
-            selectedTile = tile;
+            deselect();
+            select(tile);
         }
+
     }
 
-    private void swapResource(Tile selectedTile, Tile tile) {
-        int tempBiome = tile.getBiome();
-        tile.setBiome(selectedTile.getBiome());
-        selectedTile.setBiome(tempBiome);
-    }
 
-    public Tile getSelectedTile(){
+    public void select(ISelectable tile){
+        selectedTile = tile;
+        selectedTile.select();
+    }
+    public void deselect(){
+        selectedTile.deselect();
+        selectedTile = null;
+    }
+    public ISelectable getSelectedTile(){
         return selectedTile;
     }
     public void setSelectedTile(Tile tile){
         selectedTile = tile;
-        selectedTile.setStrokeSelected(true);
+        selectedTile.select();
     }
 
 
@@ -111,9 +121,11 @@ public abstract class Board {
         Hex hex;
         while(h.hasNext()){
             hex = h.getNext();
-            int type = hex.getType();
-            if(type == Hex.SHUFFLED || type == Hex.FIXED) {
-                hex.addActionListener(new TileListener(this));
+            hex.addActionListener(new TileListener(this));
+
+            Token token = hex.getToken();
+            if(token != null){
+                token.addActionListener(new TileListener(this));
             }
         }
         IIterator<Port> p = pc.getAllPortIterator();
@@ -209,7 +221,7 @@ public abstract class Board {
         boolean[][] valid = new boolean[getHexGridDim().height][getHexGridDim().width];
         while(i.hasNext()){
             hex = i.getNext();
-            if(hex != null && hex.getType() == Tile.SHUFFLED) {
+            if(hex != null && hex.getType() == Hex.SHUFFLED) {
                 valid[hex.getGridRow()][hex.getGridColumn()] = true;
             }
         }
@@ -373,7 +385,7 @@ public abstract class Board {
         int index = start;
         int[] resourceCounts = resourcePool.clone();
         while(index < end) {
-            int oceanOffset = resourcePool[Tile.OCEAN]/4;
+            int oceanOffset = resourcePool[ResourceTile.OCEAN]/4;
 
             //if the last resource in the resourceCounts array is 0, then trim tail
             if(resourceCounts[(resourceCounts.length - 1) - endOffset] == 0){
@@ -385,13 +397,13 @@ public abstract class Board {
                 //System.out.println("start"+startOffset);
                 startOffset++;
             }
-            int validBiomeRange = Tile.RESOURCE_MAX+1 - endOffset - startOffset;
+            int validBiomeRange = ResourceTile.RESOURCE_MAX+1 - endOffset - startOffset;
             if(validBiomeRange <= 0){
                 break;
             }
             //get random biome
             int biome = startOffset + rand.nextInt(validBiomeRange + oceanOffset);
-            biome = Math.min(biome, Tile.OCEAN);
+            biome = Math.min(biome, ResourceTile.OCEAN);
             //if valid choice, if not choose again
             if(resourceCounts[biome] > 0 || biomeCommand == null) {
                 Hex hex = hc.get(index);
@@ -399,12 +411,15 @@ public abstract class Board {
                     biomeCommand.set(hex, biome);
                     resourceCounts[biome]--;
                 }
-                if(hex.getBiome() < Tile.DESERT ){
-                    int token = tc.getNext();
+                if(hex.getBiome() < ResourceTile.DESERT ){
+                    Token token = tc.getNext();
+                    token.setDebug(getDebugFlag());
                     hex.setToken(token);
+                    token.revalidate();
+                    token.repaint();
                 }
                 else{
-                    hex.setToken(0);
+                    hex.setToken(null);
                 }
                 hex.revalidate();
                 hex.repaint();
@@ -412,7 +427,8 @@ public abstract class Board {
             }
             randomCycle++;
         }
-        resetTokensToHead();
+        tc.reset();
+        //resetTokensToHead();
         System.out.println("Random Report\nh:" + randomCycle + "/" + (end-start));
     }
 
@@ -444,8 +460,8 @@ public abstract class Board {
         int index = 0;
         while (i.hasNext()) {
             hex = i.getNext();
-            if(hex.getBiome() == Tile.OCEAN ||
-                    hex.getType() == Tile.UNFLIPPED_TYPE){
+            if(hex.getBiome() == ResourceTile.OCEAN ||
+                    hex.getType() == Hex.UNFLIPPED_TYPE){
                 continue;
             }
 
@@ -457,9 +473,9 @@ public abstract class Board {
                 //System.out.println("$");
                 Hex nbrHex = hc.getNeighbor(hex, angle);
                 if(nbrHex == null ||
-                        (nbrHex.getBiome() == Tile.OCEAN && nbrHex.getType() != Tile.UNFLIPPED_TYPE)){
+                        (nbrHex.getBiome() == ResourceTile.OCEAN && nbrHex.getType() != Hex.UNFLIPPED_TYPE)){
                     //System.out.println("^");
-                               Port port = new Port(hex, angle);
+                    Port port = new Port(hex, angle);
                     port.setId(index);
                     port.setDebug(getDebugFlag());
                     //System.out.println(index);
@@ -485,7 +501,7 @@ public abstract class Board {
         do{
             //System.out.println(end);
             port = i.getNext();
-            if(port.getHex().getType() != Tile.SHUFFLED){
+            if(port.getHex().getType() != Hex.SHUFFLED){
                  break;
             }
             end++;
@@ -546,12 +562,12 @@ public abstract class Board {
             }
             //get random biome
             int biome;
-            if(goldStart && portCounts[Tile.GOLD] > 0){
-                biome = Tile.GOLD;
+            if(goldStart && portCounts[ResourceTile.GOLD] > 0){
+                biome = ResourceTile.GOLD;
             }
             else{
                 biome = startOffset + rand.nextInt(portCounts.length - endOffset - startOffset);
-                if(biome == Tile.GOLD){
+                if(biome == ResourceTile.GOLD){
                     System.out.println("†");
                 }
             }
@@ -567,7 +583,7 @@ public abstract class Board {
             }
             randomCycle++;
         }
-        resetTokensToHead();
+        //resetTokensToHead();
         System.out.println("Random Report\np:" + randomCycle + "/" + getPortCount());
     }
 
@@ -576,22 +592,30 @@ public abstract class Board {
      * <p>Update each tile's debug flag to the boards current debug flag value.</p>
      */
     public void updateTileDebugFlags() {
-        Tile tile;
         //Hexes
         IIterator<Hex> hexIIterator = hc.getGridIterator();
+        Hex hex;
+        Token token;
         while(hexIIterator.hasNext()){
-            tile = hexIIterator.getNext();
-            tile.setDebug(getDebugFlag());
-            tile.revalidate();
-            tile.repaint();
+            hex = hexIIterator.getNext();
+            token = hex.getToken();
+            if(token != null) {
+                token.setDebug(getDebugFlag());
+                token.revalidate();
+                token.repaint();
+            }
+            hex.setDebug(getDebugFlag());
+            hex.revalidate();
+            hex.repaint();
         }
         //Ports
         IIterator<Port> portIIterator = pc.getAllPortIterator();
+        Port port;
         while(portIIterator.hasNext()){
-            tile = portIIterator.getNext();
-            tile.setDebug(getDebugFlag());
-            tile.revalidate();
-            tile.repaint();
+            port = portIIterator.getNext();
+            port.setDebug(getDebugFlag());
+            port.revalidate();
+            port.repaint();
         }
     }
 
@@ -605,7 +629,7 @@ public abstract class Board {
         Port port;
         while(portIIterator.hasNext()){
             port = portIIterator.getNext();
-            port.setFlipped(flipped);
+            port.flip(flipped);
             port.revalidate();
             port.repaint();
         }
@@ -620,9 +644,9 @@ public abstract class Board {
         Hex hex;
         while(i.hasNext()){
             hex = i.getNext();
-            hex.setType(Tile.SHUFFLED);
-            hex.setBiome(Tile.OCEAN);
-            hex.setToken(-1);
+            hex.setType(Hex.SHUFFLED);
+            hex.setBiome(ResourceTile.OCEAN);
+            hex.setToken(new Token(0, getDebugFlag(), hex));
         }
         findAllPorts();
     }
@@ -636,8 +660,8 @@ public abstract class Board {
         Port port;
         while(i.hasNext()){
             port = i.getNext();
-            port.setBiome(Tile.OCEAN);
-            port.setFlipped(false);
+            port.setBiome(ResourceTile.OCEAN);
+            port.flip(false);
         }
     }
 
@@ -658,17 +682,16 @@ public abstract class Board {
         if(getRandomFlag()){
             return;
         }
-        hex.addActionListener(new TileListener(this));
-        hex.setType(Tile.FIXED);
+        hex.setType(Hex.FIXED);
         hex.setBiome(biome);
         if(resourceCounts[biome] > 0){
             resourceCounts[biome]--;
         }
-        if(biome<Tile.DESERT){
+        if(biome < ResourceTile.DESERT){
             hex.setToken(tc.getNext());
         }
         else{
-            hex.setToken(0);
+            hex.setToken(null);
         }
     }
 
@@ -683,7 +706,7 @@ public abstract class Board {
         Hex hex = hc.get(row, col);
         hex.setId(id);
         hc.addToSpiral(hex);
-        hex.setType(Tile.UNFLIPPED_TYPE);
+        hex.setType(Hex.UNFLIPPED_TYPE);
     }
 
 
@@ -835,6 +858,13 @@ public abstract class Board {
         return pc;
     }
 
+    /**
+     * @return The current {@code PortCollection} object
+     */
+    public TokenCollection getTokenCollection() {
+        return tc;
+    }
+
 
     /**
      * @return Integer representation of the board size. <p>Small -> 0</p> <p>Large -> 1</p>
@@ -920,20 +950,20 @@ public abstract class Board {
                                + fixedHexCount + "f,"
                                + unflippedHexCount + "u,"
                                + portCount + "p)\n" +
-              "Resources:\t(" + resourceCounts[Tile.WOOD] + "w,"
-                              + resourceCounts[Tile.SHEEP] + "s,"
-                              + resourceCounts[Tile.HAY] + "h,"
-                              + resourceCounts[Tile.BRICK] + "b,"
-                              + resourceCounts[Tile.ROCK] + "r,"
-                              + resourceCounts[Tile.GOLD] + "g,"
-                              + resourceCounts[Tile.DESERT] + "d,"
-                              + resourceCounts[Tile.OCEAN] + "o)\n" +
-              "Ports:\t\t("   + portCounts[Tile.WOOD] + "w,"
-                              + portCounts[Tile.SHEEP] + "s,"
-                              + portCounts[Tile.HAY] + "h,"
-                              + portCounts[Tile.BRICK] + "b,"
-                              + portCounts[Tile.ROCK] + "r,"
-                              + portCounts[Tile.GOLD] + "g)\n" +
+              "Resources:\t(" + resourceCounts[ResourceTile.WOOD] + "w,"
+                              + resourceCounts[ResourceTile.SHEEP] + "s,"
+                              + resourceCounts[ResourceTile.HAY] + "h,"
+                              + resourceCounts[ResourceTile.BRICK] + "b,"
+                              + resourceCounts[ResourceTile.ROCK] + "r,"
+                              + resourceCounts[ResourceTile.GOLD] + "g,"
+                              + resourceCounts[ResourceTile.DESERT] + "d,"
+                              + resourceCounts[ResourceTile.OCEAN] + "o)\n" +
+              "Ports:\t\t("   + portCounts[ResourceTile.WOOD] + "w,"
+                              + portCounts[ResourceTile.SHEEP] + "s,"
+                              + portCounts[ResourceTile.HAY] + "h,"
+                              + portCounts[ResourceTile.BRICK] + "b,"
+                              + portCounts[ResourceTile.ROCK] + "r,"
+                              + portCounts[ResourceTile.GOLD] + "g)\n" +
               "Tokens:\t\t(" + getTokenString() + ")\n"
                 + getHexGridStringTitle("");
         return str;
@@ -944,9 +974,9 @@ public abstract class Board {
     }
     public String getTokenString(){
         StringBuilder sb = new StringBuilder();
-        IIterator<Integer> iterator = tc.getTokenIterator();
-        while(iterator.hasNext()){
-            sb.append(iterator.getNext());
+        IIterator<Token> i = tc.getTokenIterator();
+        while(i.hasNext()){
+            sb.append(i.getNext().valueOf());
             sb.append(",");
         }
         sb.deleteCharAt(sb.length()-1);
@@ -1039,7 +1069,7 @@ public abstract class Board {
                     }
                     else if(command instanceof TokenCommand && value == 0){
                         sb.deleteCharAt(sb.length()-1);
-                        sb.append((hex.getBiome() == Tile.DESERT?"--":"~~"));
+                        sb.append((hex.getBiome() == ResourceTile.DESERT?"--":"~~"));
                     }else {
                         sb.append(value);
                     }

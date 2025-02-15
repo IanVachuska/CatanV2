@@ -8,7 +8,11 @@ public class IdCommand implements ICommand{
      */
     @Override
     public int get(Tile tile) {
-        return tile.getId();
+        int id = 0;
+        if(tile instanceof ResourceTile resourceTile) {
+            id = resourceTile.getId();
+        }
+        return id;
     }
 
 
@@ -19,6 +23,8 @@ public class IdCommand implements ICommand{
      */
     @Override
     public void set(Tile tile, int data) {
-        tile.setId(data);
+        if(tile instanceof ResourceTile resourceTile) {
+            resourceTile.setId(data);
+        }
     }
 }
