@@ -9,8 +9,6 @@ public abstract class Tile extends JButton implements IDrawable, ISelectable{
 
 
     //FIELDS
-    private boolean debug;
-
     private final AffineTransform size;
 
     private BasicStroke stroke;
@@ -92,7 +90,7 @@ public abstract class Tile extends JButton implements IDrawable, ISelectable{
      * @param debug true enables the tile's debug display
      */
     public void setDebug(boolean debug){
-        this.debug = debug;
+        //this.debug = debug;
     }
 
 
@@ -123,7 +121,8 @@ public abstract class Tile extends JButton implements IDrawable, ISelectable{
      * @return the current state of the {@code debug} flag
      */
     public boolean isDebug(){
-        return debug;
+        //return debug;
+        return Board.isDebug();
     }
 
 

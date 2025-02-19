@@ -1,10 +1,13 @@
 package com.mycatan;
 import java.awt.*;
+import java.util.Iterator;
 import java.util.Random;
 
 public abstract class Board {
     //STATIC FIELDS
     //Flags
+    public static boolean DEBUG_VALUE = false;
+
     public static final int DEBUG = 1;
     public static final int RANDOM = 2;
 
@@ -48,51 +51,6 @@ public abstract class Board {
         initBoard();
     }
 
-    public void handleSelection(ISelectable tile){
-        if(tile == selectedTile){
-            //tiles are equal deselect tiles
-            if(tile instanceof Hex hex) {
-                int biome = hex.getBiome();
-                if(biome == ResourceTile.DESERT){
-                    hex.setBiome(ResourceTile.OCEAN);
-                }
-                else if (biome == ResourceTile.OCEAN){
-                    hex.setBiome(ResourceTile.DESERT);
-                }
-            }
-            deselect();
-        }
-        else if(tile.getClass() == selectedTile.getClass()){
-            //tiles are the same type and NOT equal
-            selectedTile.swap(tile);
-            shuffleHexes(null);
-            deselect();
-        }
-        else{
-            //tiles are NOT the same type and NOT equal
-            deselect();
-            select(tile);
-        }
-
-    }
-
-
-    public void select(ISelectable tile){
-        selectedTile = tile;
-        selectedTile.select();
-    }
-    public void deselect(){
-        selectedTile.deselect();
-        selectedTile = null;
-    }
-    public ISelectable getSelectedTile(){
-        return selectedTile;
-    }
-    public void setSelectedTile(Tile tile){
-        selectedTile = tile;
-        selectedTile.select();
-    }
-
 
     //INITIALIZERS
 
@@ -107,7 +65,8 @@ public abstract class Board {
 
         placeFixedTiles();
         placeUnflippedTiles();
-        initHexSpiral(true);
+        //initHexSpiral(true);
+        initHexSpiral(false);
         shuffleHexes();
 
         findAllPorts();
@@ -115,6 +74,7 @@ public abstract class Board {
         shufflePorts();
 
         addListeners();
+        //setBoardDemoMode(false);
     }
     private void addListeners(){
         IIterator<Hex> h = hc.getGridIterator();
@@ -147,10 +107,9 @@ public abstract class Board {
         }
         hc = new HexCollection(this);
         int medianRow = hexGridDim.height/2;
-        boolean debug = getDebugFlag();
         //Initialize the middle row of hexes first
         for (int c = 0; c < hexGridDim.width; c++) {
-            hc.addToGrid(new Hex(medianRow, c, debug));
+            hc.addToGrid(new Hex(medianRow, c));
         }
 
         /*
@@ -168,8 +127,8 @@ public abstract class Board {
                 endOffset++;
             }
             for (int c = startOffset; c < hexGridDim.width-endOffset; c++) {
-                hc.addToGrid(new Hex(medianRow - r, c, debug));
-                hc.addToGrid(new Hex(medianRow + r, c, debug));
+                hc.addToGrid(new Hex(medianRow - r, c));
+                hc.addToGrid(new Hex(medianRow + r, c));
             }
         }
     }
@@ -273,6 +232,51 @@ public abstract class Board {
     }
 
 
+    //TILE SELECTION
+
+    public void select(ISelectable tile){
+        selectedTile = tile;
+        selectedTile.select();
+    }
+    public void deselect(){
+        selectedTile.deselect();
+        selectedTile = null;
+    }
+    public ISelectable getSelectedTile(){
+        return selectedTile;
+    }
+    public void setSelectedTile(Tile tile){
+        selectedTile = tile;
+        selectedTile.select();
+    }
+    public void handleSelection(ISelectable tile){
+        if(tile == selectedTile){
+            //tiles are equal deselect tiles
+            if(tile instanceof Hex hex) {
+                int biome = hex.getBiome();
+                if(biome == ResourceTile.DESERT){
+                    hex.setBiome(ResourceTile.OCEAN);
+                }
+                else if (biome == ResourceTile.OCEAN){
+                    hex.setBiome(ResourceTile.DESERT);
+                }
+            }
+            deselect();
+        }
+        else if(tile.getClass() == selectedTile.getClass()){
+            //tiles are the same type and NOT equal
+            selectedTile.swap(tile);
+            shuffleHexes(null);
+            deselect();
+        }
+        else{
+            //tiles are NOT the same type and NOT equal
+            deselect();
+            select(tile);
+        }
+
+    }
+
     //BOARD CONTROL
 
     /**
@@ -282,6 +286,7 @@ public abstract class Board {
         shuffledHexCount += fixedHexCount + unflippedHexCount;
         fixedHexCount = 0;
         unflippedHexCount = 0;
+        tc.reshuffle();
     }
 
 
@@ -413,13 +418,13 @@ public abstract class Board {
                 }
                 if(hex.getBiome() < ResourceTile.DESERT ){
                     Token token = tc.getNext();
-                    token.setDebug(getDebugFlag());
                     hex.setToken(token);
-                    token.revalidate();
-                    token.repaint();
                 }
                 else{
                     hex.setToken(null);
+                }
+                if(hex instanceof FlippableHex fh) {
+                    fh.flip(false);
                 }
                 hex.revalidate();
                 hex.repaint();
@@ -428,17 +433,7 @@ public abstract class Board {
             randomCycle++;
         }
         tc.reset();
-        //resetTokensToHead();
         System.out.println("Random Report\nh:" + randomCycle + "/" + (end-start));
-    }
-
-
-    /**
-     * <p>Sets head of token collection built in iterator to its current value.
-     * Subsequent calls to tc.reset() will return iterator to head.</p>
-     */
-    public void resetTokensToHead(){
-        tc.reset();
     }
 
 
@@ -477,7 +472,6 @@ public abstract class Board {
                     //System.out.println("^");
                     Port port = new Port(hex, angle);
                     port.setId(index);
-                    port.setDebug(getDebugFlag());
                     //System.out.println(index);
                     pc.add(port);
                     index++;
@@ -527,7 +521,7 @@ public abstract class Board {
 
         int val = end - lastPort.getId() + port.getId();
         //System.out.println("val: " + val);
-        if(!getRandomFlag() && (val < minHop-1 || val > maxHop-1)){
+        if(!getRandomFlag() && (val < minHop-1 || val > maxHop-1) && !(this instanceof DemoBoard)){
             System.out.println("∆");
             findValidPorts();
         }
@@ -588,38 +582,6 @@ public abstract class Board {
     }
 
 
-    /**
-     * <p>Update each tile's debug flag to the boards current debug flag value.</p>
-     */
-    public void updateTileDebugFlags() {
-        //Hexes
-        IIterator<Hex> hexIIterator = hc.getGridIterator();
-        Hex hex;
-        Token token;
-        while(hexIIterator.hasNext()){
-            hex = hexIIterator.getNext();
-            token = hex.getToken();
-            if(token != null) {
-                token.setDebug(getDebugFlag());
-                token.revalidate();
-                token.repaint();
-            }
-            hex.setDebug(getDebugFlag());
-            hex.revalidate();
-            hex.repaint();
-        }
-        //Ports
-        IIterator<Port> portIIterator = pc.getAllPortIterator();
-        Port port;
-        while(portIIterator.hasNext()){
-            port = portIIterator.getNext();
-            port.setDebug(getDebugFlag());
-            port.revalidate();
-            port.repaint();
-        }
-    }
-
-
     /** <p>Sets the flipped status of all valid ports.</p
      * @param flipped <p>True->Ports Shown</p>
      *                <p>False->Ports Hidden</p>
@@ -646,7 +608,7 @@ public abstract class Board {
             hex = i.getNext();
             hex.setType(Hex.SHUFFLED);
             hex.setBiome(ResourceTile.OCEAN);
-            hex.setToken(new Token(0, getDebugFlag(), hex));
+            hex.setToken(null);
         }
         findAllPorts();
     }
@@ -703,6 +665,11 @@ public abstract class Board {
      * @param id The hex's id.
      */
     public void placeUnflippedHex(int row, int col, int id){
+        Hex flippableHex = new FlippableHex(row, col);
+        hc.updateGridHex(flippableHex);
+
+
+
         Hex hex = hc.get(row, col);
         hex.setId(id);
         hc.addToSpiral(hex);
@@ -727,6 +694,14 @@ public abstract class Board {
      */
     public void setFlags(int newFlags){
         this.flags = newFlags;
+        Board.setDebug((flags & Board.DEBUG) == Board.DEBUG);
+    }
+
+    public static boolean isDebug(){
+        return DEBUG_VALUE;
+    }
+    private static void setDebug(boolean newDebugValue){
+        DEBUG_VALUE = newDebugValue;
     }
 
 
@@ -737,6 +712,7 @@ public abstract class Board {
      */
     public void addFlags(int flag){
         flags |= flag;
+        Board.setDebug((flags & Board.DEBUG) == Board.DEBUG);
     }
 
 
@@ -748,6 +724,7 @@ public abstract class Board {
     public void removeFlags(int flag){
         if((flags & flag) == flag){
             flags -= flag;
+            Board.setDebug((flags & Board.DEBUG) == Board.DEBUG);
         }
     }
 
@@ -756,7 +733,10 @@ public abstract class Board {
      * <p>Resets {@code flag} to zero.</p>
      * <p>Does not update aggregates.</p>
      */
-    public void resetFlags(){ flags = 0; }
+    public void resetFlags(){
+        flags = 0;
+        Board.setDebug(false);
+    }
 
 
     /**

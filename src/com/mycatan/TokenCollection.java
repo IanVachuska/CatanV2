@@ -70,7 +70,7 @@ public class TokenCollection {
             }
             randomCycle++;
         }
-        Collections.shuffle(shuffledList);
+        //Collections.shuffle(shuffledList);
         tokens = shuffledList;
         System.out.println("Random Report\nt:" + randomCycle + "/" + tokenCount);
     }

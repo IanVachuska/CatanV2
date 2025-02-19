@@ -8,21 +8,21 @@ public class FlippableHex extends Hex implements IFlippableTile{
 
     //CONSTRUCTORS
     public FlippableHex() {
-        this(0,0,false);
+        this(0,0);
     }
     public FlippableHex(int row, int col) {
-        this(row, col, false);
-    }
-    public FlippableHex(int row, int col, boolean debug) {
-        super(row, col, debug);
-        flipped = false;
+        super(row, col);
+        flip(false);
     }
 
 
 
     //METHODS
     public void flip(boolean show) {
-
+        flipped = show;
+        if(getToken() != null){
+            getToken().setVisible(show);
+        }
     }
 
     public boolean isFlipped() {
@@ -35,10 +35,11 @@ public class FlippableHex extends Hex implements IFlippableTile{
      */
     @Override
     public Color getBiomeColor(){
-        if(flipped || isDebug()){
-            return ResourceTile.getBiomeColor(ResourceTile.UNFLIPPED_RESOURCE);
-        }
-        return super.getBiomeColor();
-    }
+        if(flipped){
+            return super.getBiomeColor();
 
+        }
+        return ResourceTile.getBiomeColor(ResourceTile.UNFLIPPED_RESOURCE);
+
+    }
 }

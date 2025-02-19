@@ -39,12 +39,9 @@ public class Hex extends ResourceTile {
 
     //CONSTRUCTORS
     public Hex() {
-        this(0,0,false);
+        this(0,0);
     }
     public Hex(int row, int col) {
-        this(row, col, false);
-    }
-    public Hex(int row, int col, boolean debug) {
         super();
         this.gridLocation = new Point(0,0);
         this.worldLocation = new Point(0,0);
@@ -53,9 +50,8 @@ public class Hex extends ResourceTile {
         initPoints();
         polygon = new Polygon(xPoints, yPoints, SIDES);
         setGridLocation(row, col);
-        token = new Token(0);
+        token = null;
         setType(SHUFFLED);
-        setDebug(debug);
 
         setOpaque(false);
     }
@@ -100,7 +96,7 @@ public class Hex extends ResourceTile {
         g2d.fill(polygon);
 
         if(isDebug()) {
-            displayDebugInfo(g2d, this);
+            //displayDebugInfo(g2d, this);
         }
     }
 
@@ -131,10 +127,9 @@ public class Hex extends ResourceTile {
     }
 
     public void setToken(Token token){
-        this.token.setParentHex(null);
         this.token = token;
-        if(token != null){
-            token.setParentHex(this);
+        if(this.token != null){
+            this.token.setParentHex(this);
         }
     }
 
@@ -177,7 +172,10 @@ public class Hex extends ResourceTile {
     public void deselect(){
         setStroke(basicStroke);
     }
-
+    @Override
+    public void swap(ISelectable other){
+        super.swap(other);
+    }
 
 
     //GETTERS

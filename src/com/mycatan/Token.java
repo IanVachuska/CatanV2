@@ -25,16 +25,12 @@ public class Token extends Tile {
 
     //CONSTRUCTOR
     public Token(int value){
-        this(value, false, null);
+        this(value, null);
     }
-    public Token(int value,  boolean debug) {
-        this(value, false, null);
-    }
-    public Token(int value, boolean debug,  Hex parentHex) {
+    public Token(int value,  Hex parentHex) {
+        super();
         this.value = value;
         this.parentHex = parentHex;
-        setDebug(debug);
-
 
         arc = new Arc2D.Double((double) -LENGTH, (double)-LENGTH,
                 (double)LENGTH*2, (double)LENGTH*2, 0, 360, Arc2D.PIE);
@@ -85,27 +81,24 @@ public class Token extends Tile {
      */
     @Override
     public void draw(Graphics2D g2d) {
-        if(value != 0) {
-            //Draw and fill the token
-            g2d.draw(arc);
-            g2d.setColor(TOKEN_COLOR);
-            g2d.fill(arc);
+        //Draw and fill the token
+        g2d.draw(arc);
+        g2d.setColor(TOKEN_COLOR);
+        g2d.fill(arc);
 
-            //Get font data
-            g2d.setFont(tokenFont);
-            String tokenString = Integer.toString(valueOf());
-            FontMetrics fm = g2d.getFontMetrics();
-            int textWidth = fm.stringWidth(tokenString);
-            int textHeight = fm.getHeight() - 8;
+        //Get font data
+        g2d.setFont(tokenFont);
+        String tokenString = Integer.toString(valueOf());
+        FontMetrics fm = g2d.getFontMetrics();
+        int textWidth = fm.stringWidth(tokenString);
+        int textHeight = fm.getHeight() - 8;
 
-            //Draw the tokens number value
-            g2d.setColor(Color.BLACK);
-            g2d.drawString(tokenString,
-                    -textWidth / 2,
-                    textHeight / 2);
-        }
+        //Draw the tokens number value
+        g2d.setColor(Color.BLACK);
+        g2d.drawString(tokenString,
+                -textWidth / 2, textHeight / 2);
         if(isDebug()){
-            displayDebugInfo(g2d, parentHex);
+            //displayDebugInfo(g2d, parentHex);
         }
     }
 
@@ -117,13 +110,6 @@ public class Token extends Tile {
     @Override
     public int getPreScaleHeight() {
         return getPreScaleWidth();
-    }
-    @Override
-    public boolean isDebug() {
-        if(parentHex != null){
-            return parentHex.isDebug();
-        }
-        return false;
     }
 
     /**
@@ -177,7 +163,6 @@ public class Token extends Tile {
         int tempTokenValue = otherToken.value;
         otherToken.value = this.value;
         this.value = tempTokenValue;
-        System.out.println("kkkkkkk");
     }
     @Override
     public  boolean contains(int ptrX, int ptrY) {

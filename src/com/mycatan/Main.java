@@ -2,7 +2,8 @@ package com.mycatan;
 public class Main {
     public static void main(String[] args) {
         if (args.length == 0) {
-            new Catan("Fog L -d");
+            new Catan();
+            //new Catan("demo s -d");
         }
         else if (args.length == 1) {
             try {

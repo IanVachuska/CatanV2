@@ -2,7 +2,7 @@ package com.mycatan;
 
 public class FogIslandBoard extends Board implements IFlippable {
 
-    private TokenCollection tc;
+    private TokenCollection utc;
 
     //CONSTRUCTORS
     public FogIslandBoard(int boardSize, int flags) {
@@ -38,7 +38,6 @@ public class FogIslandBoard extends Board implements IFlippable {
      */
     @Override
     public void initTileCounts() {
-
         super.setTileCounts( 21,19,25,9);
         /*
         switch (getBoardSize()){
@@ -81,6 +80,8 @@ public class FogIslandBoard extends Board implements IFlippable {
      */
     @Override
     public void initTokens() {
+        this.utc = new TokenCollection(FogIslandBoardBuilder.getUnflippedTokens(getBoardSize()));
+        this.utc.shuffle();
         super.setTokens(FogIslandBoardBuilder.getTokens(getBoardSize()));
     }
 
@@ -156,10 +157,7 @@ public class FogIslandBoard extends Board implements IFlippable {
         super.poolHexCounts();
         combineResourceCount(
                 FogIslandBoardBuilder.getUnflippedResources(getBoardSize()));
-        TokenCollection tc = new TokenCollection(
-                FogIslandBoardBuilder.getUnflippedTokens(getBoardSize()));
-        tc.shuffle();
-        combineTokenCollections(tc);
+        combineTokenCollections(utc);
 
     }
 
@@ -258,13 +256,11 @@ public class FogIslandBoard extends Board implements IFlippable {
      */
     @Override
     public void shuffleUnflippedHexes(){
-        TokenCollection tokenCollection = new TokenCollection(
-                FogIslandBoardBuilder.getUnflippedTokens(getBoardSize()));
-        tokenCollection.shuffle();
+        utc.reshuffle();
         int s = getShuffledHexCount() + getFixedHexCount();
         int u = getUnflippedHexCount();
         shuffleHexes(FogIslandBoardBuilder.getUnflippedResources(getBoardSize()),
-                tokenCollection, s, s+u);
+                utc, s, s+u);
     }
 
 
@@ -337,7 +333,7 @@ public class FogIslandBoard extends Board implements IFlippable {
         private static final int[] unflippedTokensSmall =
                 {0,0,0,0,0, 0,0,0,0,0};
         private static final int[] unflippedTokensLarge =
-                {2,1,4,2,1, 1,2,1,1,1};
+                {2,1,1,2,1, 1,2,1,1,1};
         //       2,3,4,5,6,8,9,10,11,12
         public static int[] getUnflippedTokens(int boardSize) {
             if(boardSize == SMALL_BOARD){

@@ -14,7 +14,8 @@ public class Catan extends JFrame {//Controller
     public static final int STANDARD_BOARD = 0;
     public static final int SEAFARERS_BOARD = 1;
     public static final int FOGISLAND_BOARD = 2;
-    private static final String[] gameModeStrings = {"standard", "seafarers", "fogisland"};
+    public static final int DEMO_BOARD = 3;
+    private static final String[] gameModeStrings = {"standard", "seafarers", "fogisland", "demo"};
 
     //FIELDS
     //Model
@@ -47,6 +48,8 @@ public class Catan extends JFrame {//Controller
         setPreferredSize(setMinimumScreenSize());
         this.addComponentListener(new ResizeListener(this));
         //this.addMouseListener(new MyMouseListener(this));
+
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
     public Catan(String boardTypeString, String boardSizeString, String boardModifiersString) {
@@ -63,6 +66,8 @@ public class Catan extends JFrame {//Controller
         setVisible(true);
         setPreferredSize(setMinimumScreenSize());
         this.addComponentListener(new ResizeListener(this));
+
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
     public Catan(String type) {
@@ -87,6 +92,8 @@ public class Catan extends JFrame {//Controller
         setVisible(true);
         setPreferredSize(setMinimumScreenSize());
         this.addComponentListener(new ResizeListener(this));
+
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
     public Catan(int boardType, int boardSize, int boardFlags) {
@@ -99,6 +106,8 @@ public class Catan extends JFrame {//Controller
         setVisible(true);
         setPreferredSize(setMinimumScreenSize());
         this.addComponentListener(new ResizeListener(this));
+
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
 
@@ -408,10 +417,13 @@ public class Catan extends JFrame {//Controller
         debugBox.addActionListener(e -> {
             if (debugBox.isSelected()) {
                 board.addFlags(Board.DEBUG);
+
             } else {
                 board.removeFlags(Board.DEBUG);
             }
-            board.updateTileDebugFlags();
+            bv.revalidate();
+            bv.repaint();
+            //board.updateTileDebugFlags();
         });
         addBoxHotKey("D", debugBox);
         parent.add(debugBox);
@@ -661,12 +673,20 @@ public class Catan extends JFrame {//Controller
         switch (boardType) {
             case STANDARD_BOARD:
                 board = new StandardBoard(boardSize, boardModifiers);
+                setTitle("Standard Board");
                 break;
             case SEAFARERS_BOARD:
                 board = new SeafarersBoard(boardSize, boardModifiers);
+                setTitle("Seafarers Board");
                 break;
             case FOGISLAND_BOARD:
                 board = new FogIslandBoard(boardSize, boardModifiers);
+                setTitle("Fog Island Board");
+                break;
+            case DEMO_BOARD:
+                board = new DemoBoard();
+                setTitle("Demo Board");
+                break;
         }
         if (board.getDebugFlag()) {
             printBoardData();
@@ -676,9 +696,6 @@ public class Catan extends JFrame {//Controller
         Dimension minimumSize = setMinimumScreenSize();
         setPreferredSize(minimumSize);
         setUnflippedButtonState();
-        if (board.getDebugFlag()) {
-            printBoardData();
-        }
     }
 
 
@@ -823,7 +840,7 @@ public class Catan extends JFrame {//Controller
     private int parseBoardType(String typeString) {
         typeString = typeString.toLowerCase();
         int[] counts = new int[gameModeStrings.length];
-        int min = Math.min(typeString.length(), gameModeStrings[0].length());
+        int min = Math.min(typeString.length(), gameModeStrings[3].length());
         for (int i = 0; i < min; i++) {
             char val = typeString.charAt(i);
             for (int j = 0; j < gameModeStrings.length; j++) {
@@ -832,7 +849,7 @@ public class Catan extends JFrame {//Controller
                 }
             }
         }
-        int max = Math.max(Math.max(counts[0], counts[1]), counts[2]);
+        int max = Math.max(Math.max(Math.max(counts[0], counts[1]), counts[2]), counts[3]);
         int type = 0;
         while (type < counts.length && counts[type] != max) {
             type++;

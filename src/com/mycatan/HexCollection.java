@@ -33,6 +33,9 @@ public class HexCollection {
     }
 
     //ADD
+    public void updateGridHex(Hex hex){
+        grid[hex.getGridRow()][hex.getGridColumn()] = hex;
+    }
 
     /**
      * <p>Add the {@code hex} to the {@code hexGrid} collection.</p>
@@ -41,7 +44,7 @@ public class HexCollection {
      * @param hex the object that gets added
      */
     public void addToGrid(Hex hex){
-        grid[hex.getGridRow()][hex.getGridColumn()] = hex;
+        updateGridHex(hex);
         gridSize++;
     }
 
