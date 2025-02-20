@@ -11,6 +11,7 @@
   <p>-Removes the need for physical versions of the resource tiles, number tokens, and ports as well as any game border pieces.</p>
   <p>-Uses constrained randomness to initialize the board pieces depending on the size and board type parameters and allows users 
     to reshuffle individual elements of the board or make manual modifications.</p>
+  <p>Learn more about the program be reading the user manual <a href="/Documentation/Sailors_of _Catan_Manual.pdf" target=_blank>here</a></p>
 
 # About Author
 <p>I recently graduated from California State University, Sacramento with a Bachelor's Degree in Computer Science and Mathematics. I am currently looking for software engineering positions and am eager to showcase and develop my skills as a software engineer.</p>
